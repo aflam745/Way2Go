@@ -4,7 +4,7 @@
 
 The Main Dashboard is the first screen users will see after logging into the application. The layout is designed to provide a quick overview of the user’s created plans, with a clean and simple interface that makes it easy to understand at a glance.
 
-
+![dashboard](https://github.com/user-attachments/assets/99ec0e20-960d-4699-949d-aceb6ee4dd8e)
 
 On this screen, users can interact with three main elements:
 
@@ -23,7 +23,7 @@ A user who wants to view the itinerary for weekend plans they had made with frie
 
 The Plan Creation Page is designed to be simple and intuitive, allowing users to quickly input their starting point and desired destinations to generate a new plan.
 
-
+![create](https://github.com/user-attachments/assets/5b4bf1b3-98fd-4731-8559-e88f894c828c)
 
 The layout of the viewport is minimal, including only input text fields and a large button. The user has the option to add up to 5 stops using the plus button. Once the starting point and at least one stop is entered, the generate button becomes fuller with color to indicate that all fields are validated.
 
@@ -35,7 +35,7 @@ A user who is visiting MA wants to create an itinerary. After clicking the plus 
 
 ## Plan Details Page
 
-
+![delete](https://github.com/user-attachments/assets/ce40bf76-51b4-4e8f-a3b8-d13b4ba2eeca)
 
 The Plan Details Page shows users their created plan with an embedded viewport from a maps app. Beneath the map with the plotted destinations is an order of destinations that would take the least amount of time / most efficient way to travel and visit in.
 
