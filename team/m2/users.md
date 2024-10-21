@@ -2,7 +2,7 @@
 
 ## Primary Audience
 
-The primary users of Way2Go web application are young adults, although people of any age can use it, who are looking to go on vacation and have a list of places they would like to visit but have a limited amount of time.
+The primary users of our Way2Go web application are young adults, although people of any age can use it, who are looking to go on vacation and have a list of places they would like to visit but have a limited amount of time.
 
 These individuals will likely have a stable income and job that allows for a vacation, and it is likely they will have relatively high familiarity with technology such that they would be looking for an efficient web application to give them a good itinerary.
 
