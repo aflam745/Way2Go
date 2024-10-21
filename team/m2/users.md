@@ -17,3 +17,6 @@ Young adults in particular may be exceedingly busy, so the application should pr
 Older adults may require a more granular control of what exactly they want to do, so our application may also introduce further constraints that one can add to get a better match for a schedule.
 
 ## Why These Users Matter
+Young adults provide the backbone for the new workforce, but vacations are essential in order to ensure that they do not get burnt out and begin performing at subpar levels, so it is vital that they are able to effectively plan these vacations with minimal stress such that they can fully relax.
+
+Older adults may be at higher levels in a company, perhaps in more leadership-oriented positions, and effective leadership is needed in any company, so ensuring this leadership remains strong with low-stress vacation planning will in turn also help the lower level employees. People with families will also be able to expose their children to different experiences that they will carry for the rest of their lives, and our application can help ensure it is the best experience possible.
