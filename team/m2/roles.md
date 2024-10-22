@@ -2,7 +2,7 @@
 
 ## Jimmy Jiang
 
-- [Merged Branch](https://github.com/aflam745/CS326Team36Project/commit/24d2b48b672a5950eda875e22426867292af3cde)
+- [Merged Branch](https://github.com/aflam745/CS326Team36Project/commit/55c900b7d016a65917c20c2dcb311a2370be3662)
 - [Assigned Members](https://github.com/aflam745/CS326Team36Project/commit/bc74b8a050cc3997a22896d2be88a233fa719d0c)
 - [Added Features](https://github.com/aflam745/CS326Team36Project/commit/31a30b912930c96fa2be50d8be4326e36bf71e98)
 
