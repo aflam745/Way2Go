@@ -9,8 +9,8 @@ paying for a travel agent to help you plan your trip.
 
 ## Proposed Solution
 
-Our web application, **ItineraryPlanner**, aims to solve this problem by providing users with a comprehensive itinerary planning application.
-ItineraryPlanner will take all of the locations a user wants to visit and give them an optimal itinerary to minimize the users travel time.
+Our web application, **Way2Go**, aims to solve this problem by providing users with a comprehensive itinerary planning application.
+Way2Go will take all of the locations a user wants to visit and give them an optimal itinerary to minimize the users travel time.
 
 Key Features:
 
@@ -19,11 +19,11 @@ Key Features:
 - **History**: Users will be able to save the itineraries that are generated and favorite the ones they like the most to look back at them for future reference.
 - **Multi-Device Access**: Accessible on both desktop and mobile devices, allowing users to plan trips on the go.
 
-By having advanced scheduling algorithms and multiple advanced scheduling features, ItineraryPlanner makes planning your dream trip as easy as clicking a button.
+By having advanced scheduling algorithms and multiple advanced scheduling features, Way2Go makes planning your dream trip as easy as clicking a button.
 
 ## Why this matters
 
 In today's world, work hours are getting longer, school is getting harder, and people's overall stressors are growing. Thats why its more important than ever to be able
 to kick back, relax, and go on an awesome trip. The last thing people want when they finally get to get away from their hectic lives is to have to stress about planning how
-they are going to get everywhere they want to go. Sure they can go spend even more money for a personal travel agent or they could just use ItineraryPlanner and click a few buttons and
+they are going to get everywhere they want to go. Sure they can go spend even more money for a personal travel agent or they could just use Way2Go and click a few buttons and
 have the perfect trip planned out for them!
