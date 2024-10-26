@@ -29,7 +29,8 @@ Emmanuel will be working on the Figma mockup and will work on the UI for the pro
 ## Jason Simmonds
 
 Jason will be supporting Emmanuel by writing CSS for the UI. 
-Jason also plans to work on the backend writing the path finding algorithm for the route creation.
+Jason also plans to work on the backend writing the path finding
+algorithm for the route creation.
 
 - [Corrected name and added commit log](https://github.com/aflam745/CS326Team36Project/pull/7/commits/6c0efa8bd3c55ea3333399ed689aa11af7c3dfe1)
 - [Added Members Section](https://github.com/aflam745/CS326Team36Project/pull/7/commits/e59428c1b6e2f87d3ed0d017b489c5c067fd0a88)
