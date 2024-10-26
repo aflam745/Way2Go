@@ -1,0 +1,32 @@
+{
+  "name": "Way2Go",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "license": "AGPL-version-3.0",
+  "private": false,
+  "engines": {
+    "node": ">= 14.0.0",
+    "npm": ">= 6.0.0"
+  },
+  "homepage": "",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "bugs": "",
+  "keywords": [],
+  "author": {
+    "name": "Andrew Flammia",
+    "email": "aflammia@umass.edu",
+    "url": ""
+  },
+  "contributors": [],
+  "scripts": {
+    "start": "http-server ./src -p 3000"
+  },
+  "dependencies": {
+    "http-server": "^14.1.1"
+  }
+}
