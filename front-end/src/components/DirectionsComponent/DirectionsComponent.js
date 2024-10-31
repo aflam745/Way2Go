@@ -1,5 +1,4 @@
-import { BaseComponent } from "../BaseComponent/BaseComponent";
-require('dotenv').config();
+import { BaseComponent } from "../BaseComponent/BaseComponent.js";
 
 export default class DirectionsComponent extends BaseComponent {
     #container = null;
@@ -22,38 +21,20 @@ export default class DirectionsComponent extends BaseComponent {
         this.#getDirections();
     }
 
+    /**
+     * Retrieves and forms directions for the locations of the activities comprising the itinerary. Itinerary is already in the optimal order.
+     */
     async #getDirections() {
-        const req =
-        {
-            "jobs": [],
-            "shipments": [],
-            "vehicles": [],
-            "options": {
-                "g": true
-            }
-        }
+        // ORS takes coords in lon, lat format
 
-        req.vehicles.push({
-            "id": 1,
-            "profile": this.itinerary.transportation,
-            "start": [this.itinerary.start.lon, this.itinerary.start.lat], // ORS takes coords in lon, lat format
-            "end": [this.itinerary.end.lon, this.itinerary.end.lat],
-        });
+        // Update the below line to use itinerary.days
+        const coordinatesList = this.itinerary.activities.map(activity => [activity.lon, activity.lat]);
 
-        this.itinerary.activities.forEach((a, i) => {
-            req.jobs.push({
-                "id": i + 1,
-                "location": [a.lon, a.lat] 
-            });
-        });
+        const transportation = this.transportation;
 
-        const response = await fetch(`https://api.openrouteservice.org/v2/directions/${mode}/geojson`, {
+        const response = await fetch(`/directions`, {
             method: 'POST',
-            headers: {
-                'Authorization': process.env.ORS_API_KEY,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(req)
+            body: JSON.stringify({coordinatesList, transportation})
         });
 
         const data = await response.json();
@@ -62,11 +43,10 @@ export default class DirectionsComponent extends BaseComponent {
 
         data.features[0].properties.segments.forEach((segment, i) => {
             const label = document.createElement('h3');
-            label.innerText = "Directions to stop " + (i + 1);
+            label.innerText = "Directions to " + this.itinerary.activities[i].name;
             this.#container.appendChild(label);
             const ol = document.createElement('ol');
             segment.steps.forEach(step => {
-                console.log(step.instruction);
                 const li = document.createElement('li');
                 li.textContent = step.instruction;
                 ol.appendChild(li);
