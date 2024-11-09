@@ -73,6 +73,7 @@ export class ActivityFormComponent extends BaseComponent {
   }
 
   #attachEventListeners(){
+    const specificDay = this.#container.querySelector('#specific-day');
     const daySelection = this.#container.querySelector('#day-selection');
     const location = this.#container.querySelector('#location');
     const address = this.#container.querySelector('#address');
@@ -85,33 +86,29 @@ export class ActivityFormComponent extends BaseComponent {
 
     addActivityBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      this.#handleAddActivity(daySelection, location, address, duration, openTime, closeTime, notes);
+      this.#handleAddActivity(specificDay, daySelection, location, address, duration, openTime, closeTime, notes);
     });
 
     clearActivityBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      this.#clearInputs(daySelection, location, address, duration, openTime, closeTime, notes);
+      this.#clearInputs(specificDay, daySelection, location, address, duration, openTime, closeTime, notes);
     });
   }
 
-  #handleAddActivity(day, location, address, duration, openTime, closeTime, notes){
+  #handleAddActivity(specificDay, day, location, address, duration, openTime, closeTime, notes){
+    this.#publishNewActivity(specificDay.value, day.value, location.value, address.value, duration.value, openTime.value, closeTime.value, notes.value)
 
-    console.log(day.value);
-    console.log(location.value);
-    console.log(address.value);
-
-    this.#publishNewActivity(day.value, location.value, address.value, duration.value, openTime.value, closeTime.value, notes.value)
-
-    this.#clearInputs(day, location, address, duration, openTime, closeTime, notes);
+    this.#clearInputs(specificDay, day, location, address, duration, openTime, closeTime, notes);
   }
 
-  #publishNewActivity(day, location, address, duration, openTime, closeTime, notes){
+  #publishNewActivity(specificDay, day, location, address, duration, openTime, closeTime, notes){
     const hub = EventHub.getInstance();
-    hub.publish(Events.NewActivity, { day, location, address, duration, openTime, closeTime, notes });
-    hub.publish(Events.StoreActivity, { day, location, address, duration, openTime, closeTime, notes });
+    hub.publish(Events.NewActivity, { specificDay, day, location, address, duration, openTime, closeTime, notes });
+    hub.publish(Events.StoreActivity, { specificDay, day, location, address, duration, openTime, closeTime, notes });
   }
 
-  #clearInputs(day, location, address, duration, openTime, closeTime, notes){
+  #clearInputs(specificDay, day, location, address, duration, openTime, closeTime, notes){
+    specificDay.value = '';
     day.value = '';
     location.value = '';
     address.value = '';

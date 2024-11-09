@@ -36,3 +36,8 @@
   margin-right: 15px;
   word-break: break-word;
 }
+
+.activity-item-details {
+  display: none;
+  padding-top: 10px;
+}
