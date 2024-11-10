@@ -1,5 +1,7 @@
 import { BaseComponent } from "../BaseComponent/BaseComponent.js";
 import { ActivityItemDetailsComponent } from "../ActivityItemDetailsComponent/ActivityItemDetailsComponent.js";
+import { EventHub } from "../../eventhub/EventHub.js";
+import { Events } from "../../eventhub/Events.js";
 
 export class ActivityItemComponent extends BaseComponent {
   #container = null;
@@ -33,6 +35,8 @@ export class ActivityItemComponent extends BaseComponent {
       <h3 id="activityTitle"></h3>
       <div id="activityDetails" class="activity-item-details"></div>
     </div>
+    <button id="editActivity">Edit</button>
+    <button id="deleteActivity">Delete</button>
     `
   }
 
@@ -47,6 +51,16 @@ export class ActivityItemComponent extends BaseComponent {
       const isExpanded = activityDetailsElement.style.display === 'block';
       activityDetailsElement.style.display = isExpanded ? 'none' : 'block';
     });
+
+    const editActivityButton = this.#container.querySelector('#editActivity');
+    editActivityButton.addEventListener('click', (e) => {
+      this.#publishEditActivity(this.activityData);
+    })
+
+    const deleteActivityButton = this.#container.querySelector('#deleteActivity');
+    deleteActivityButton.addEventListener('click', (e) => {
+      
+    })
   }
 
   #createActivityDetails(activityData){
@@ -59,5 +73,11 @@ export class ActivityItemComponent extends BaseComponent {
 
   #getActivityDetailsElement(){
     return this.#container.querySelector('#activityDetails');
+  }
+
+  #publishEditActivity(activityData){
+    const hub = EventHub.getInstance();
+
+    hub.publish(Events.EditActivity, { activityData });
   }
 }

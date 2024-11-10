@@ -93,6 +93,9 @@ export class ActivityFormComponent extends BaseComponent {
       e.preventDefault();
       this.#clearInputs(specificDay, daySelection, location, address, duration, openTime, closeTime, notes);
     });
+
+    const hub = EventHub.getInstance();
+    hub.subscribe('EditActivity', activityData => this.#fillFormEditActivity(activityData));
   }
 
   #handleAddActivity(specificDay, day, location, address, duration, openTime, closeTime, notes){
@@ -116,5 +119,18 @@ export class ActivityFormComponent extends BaseComponent {
     openTime.value = '';
     closeTime.value = '';
     notes.value = '';
+  }
+
+  #fillFormEditActivity(activityData){
+    const data = activityData.activityData;
+
+    this.#container.querySelector('#specific-day').value = data.specificDay;
+    this.#container.querySelector('#day-selection').value = data.day;
+    this.#container.querySelector('#location').value = data.location;
+    this.#container.querySelector('#address').value = data.address;
+    this.#container.querySelector('#duration').value = data.duration;
+    this.#container.querySelector('#open-time').value = data.openTime;
+    this.#container.querySelector('#close-time').value = data.closeTime;
+    this.#container.querySelector('#notes').value = data.notes;
   }
 }
