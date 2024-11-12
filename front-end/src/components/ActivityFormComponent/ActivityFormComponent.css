@@ -33,10 +33,15 @@
   display: block;
 }
 
+.activity-form input {
+  box-sizing: border-box;
+  padding: 4px;
+}
+
 /* Applies styling to all input, textarea, and select that are children of activity form */
 .activity-form :is(input, textarea, select) {
-  border: 1px solid #ccc;
-  background: #eee;
+  border: 1px solid #999;
+  background: #fff;
   border-radius: 5px;
 }
 
