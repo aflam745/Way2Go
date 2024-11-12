@@ -91,7 +91,7 @@ export class ActivityFormComponent extends BaseComponent {
 
     clearActivityBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      this.#clearInputs(specificDay, daySelection, location, address, duration, openTime, closeTime, notes);
+      this.#clearInputs();
     });
 
     const hub = EventHub.getInstance();
@@ -111,14 +111,7 @@ export class ActivityFormComponent extends BaseComponent {
   }
 
   #clearInputs(specificDay, day, location, address, duration, openTime, closeTime, notes){
-    specificDay.value = '';
-    day.value = '';
-    location.value = '';
-    address.value = '';
-    duration.value = '';
-    openTime.value = '';
-    closeTime.value = '';
-    notes.value = '';
+    this.#container.querySelector('form')?.reset()
   }
 
   #fillFormEditActivity(activityData){
