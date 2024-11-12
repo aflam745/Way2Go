@@ -112,10 +112,15 @@ export class ActivityFormComponent extends BaseComponent {
     hub.publish(Events.StoreActivity, data);
   }
 
+  // Clears the form
   #clearInputs() {
     this.#container.querySelector('form')?.reset()
   }
 
+  /*
+    * @param {Object} activityData
+    * Sets the values on the form based on the values present in the activityData object
+    */
   #fillFormEditActivity(activityData) {
     const data = activityData.activityData;
 
