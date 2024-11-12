@@ -4,3 +4,8 @@
 - **Task**: Format and write the users.md file
 - **Details**: I did the formatting for users.md and also explained the primary audience for Way2Go, what these users needed in the application, and why these users are important
 - **Link to Commit**: [Initial Commit on users.md](https://github.com/aflam745/CS326Team36Project/commit/da445573eaf121d6427fb10c00347b96751dabfa)
+
+### November 11, 2024
+-**Task**: Create basic-itineraries branch
+-**Details**: I made the branch for the itineraries page to get ready for the basic HTML additions
+-**Link to Commit**: N/A
