@@ -3,6 +3,7 @@ import { EventHub } from "../../eventhub/EventHub.js";
 import { Events } from "../../eventhub/Events.js";
 
 export class ActivityFormComponent extends BaseComponent {
+  /** @type HTMLDivElement | null */
   #container = null;
 
   constructor() {
@@ -73,15 +74,7 @@ export class ActivityFormComponent extends BaseComponent {
   }
 
   #attachEventListeners() {
-    const specificDay = this.#container.querySelector('#specific-day');
-    const daySelection = this.#container.querySelector('#day-selection');
-    const location = this.#container.querySelector('#location');
-    const address = this.#container.querySelector('#address');
-    const duration = this.#container.querySelector('#duration');
-    const openTime = this.#container.querySelector('#open-time');
-    const closeTime = this.#container.querySelector('#close-time');
-    const notes = this.#container.querySelector('#notes');
-    const addActivityBtn = this.#container.querySelector('#add-activity');
+    /** @type HTMLButtonElement */
     const clearActivityBtn = this.#container.querySelector('#clear');
 
     /** @type HTMLFormElement */
@@ -107,7 +100,6 @@ export class ActivityFormComponent extends BaseComponent {
     */
   #handleAddActivity2(formData) {
     this.#publishNewActivity2(Object.fromEntries(formData))
-
     this.#clearInputs()
   }
 
@@ -127,13 +119,11 @@ export class ActivityFormComponent extends BaseComponent {
   #fillFormEditActivity(activityData) {
     const data = activityData.activityData;
 
-    this.#container.querySelector('#specific-day').value = data.specificDay;
-    this.#container.querySelector('#day-selection').value = data.day;
-    this.#container.querySelector('#location').value = data.location;
-    this.#container.querySelector('#address').value = data.address;
-    this.#container.querySelector('#duration').value = data.duration;
-    this.#container.querySelector('#open-time').value = data.openTime;
-    this.#container.querySelector('#close-time').value = data.closeTime;
-    this.#container.querySelector('#notes').value = data.notes;
+    for (let [key, val] of Object.entries(data)) {
+      // This query searches for either an input, select, or textarea and then sets the value based on the in activityData
+      const query = `:is(input[name="${key}"], select[name="${key}"], textarea[name="${key}"])`
+      const input = this.#container.querySelector(query)
+      input.value = val
+    }
   }
 }
