@@ -31,12 +31,12 @@ export class ActivityItemComponent extends BaseComponent {
 
   #setupContainerItemContent() {
     this.#container.innerHTML = `
-    <div>
-      <h3 id="activityTitle"></h3>
-      <div id="activityDetails" class="activity-item-details"></div>
+    <h3 id="activityTitle"></h3>
+    <div class="button-group">
+      <button id="editActivity">Edit</button>
+      <button id="deleteActivity">Delete</button>
     </div>
-    <button id="editActivity">Edit</button>
-    <button id="deleteActivity">Delete</button>
+    <div id="activityDetails" class="activity-item-details"></div>
     `
   }
 

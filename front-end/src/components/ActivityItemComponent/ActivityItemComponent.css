@@ -2,7 +2,7 @@
 
 /* Task Item Container */
 .activity-item {
-  display: flex;
+  display: grid;
   justify-content: space-between;
   align-items: center;
   background-color: #f8f8f8;
@@ -14,6 +14,7 @@
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
   width: 100%;
   box-sizing: border-box;
+  grid-template: "title buttons" "details details";
 }
 
 /* Hover Effect for Task Items */
