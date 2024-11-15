@@ -1,3 +1,5 @@
+@import url("/theme.css");
+
 .activity-form-container {
   width: 100%;
   max-width: 800px;
@@ -43,4 +45,3 @@
   background: #fff;
   border-radius: 5px;
 }
-

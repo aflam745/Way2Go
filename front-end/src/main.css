@@ -30,8 +30,14 @@ body {
 }
 
 /* Button Styling */
-button {
-  background-color: #007bff;
+
+/* NOTE:
+ * Use of :where is to ensure that baseline 
+ * styles can always be more easily overridden 
+ */
+
+:where(button) {
+  background-color: var(--blue);
   color: white;
   border: none;
   padding: 10px 15px;
@@ -41,6 +47,6 @@ button {
   transition: background-color 0.3s ease;
 }
 
-button:hover {
-  background-color: #0056b3;
+:where(button:hover) {
+  background-color: var(--hover-blue);
 }
