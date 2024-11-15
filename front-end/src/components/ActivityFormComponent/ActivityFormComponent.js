@@ -99,12 +99,18 @@ export class ActivityFormComponent extends BaseComponent {
     * @param {FormData} formData  - Data from the form in formData format
     */
   #handleAddActivity2(formData) {
-    this.#publishNewActivity2(Object.fromEntries(formData))
+    const currentTime = new Date().toLocaleTimeString();
+    const randThreeDigitInt = (Math.floor((Math.random() * 900) + 100)).toString();
+    const activityId = { activityId: currentTime + "_" + randThreeDigitInt}
+    this.#publishNewActivity2({
+      ...Object.fromEntries(formData),
+      ...activityId,
+    });
     this.#clearInputs()
   }
 
   /**
-    * @param {Object} data 
+    * @param {Object} data
     */
   #publishNewActivity2(data) {
     const hub = EventHub.getInstance();
