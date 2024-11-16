@@ -1,13 +1,14 @@
 import Activity from "./Activity";
 
 export default class Itinerary {
-    constructor(id, tripName, startDate, endDate, startLocation, endLocation, description, image) {
+    constructor(id, tripName, startDate, endDate, startLocation, endLocation, transportation description, image) {
         this.id = id;
         this.tripName = tripName;
         this.startDate = startDate; // earliest time activities can be scheduled
         this.endDate = endDate; // latest time activities can be scheduled
         this.startLocation = startLocation;
         this.endLocation = endLocation;
+        this.transportation = transportation;
         this.description = description;
         this.image = image;
 
@@ -28,7 +29,7 @@ export default class Itinerary {
      * @param {*} image optional image to display with the trip
      * @returns an Itinerary instance
      */
-    static async createNewItinerary(tripName, startDate, endDate, startLocation, endLocation, description, image) {
+    static async createNewItinerary(tripName, startDate, endDate, startLocation, endLocation, transportation, description, image) {
         const id = Date.now() + Math.floor(Math.random() * 1000)
         await fetch("/createItinerary", {
             method: 'POST',
@@ -39,12 +40,13 @@ export default class Itinerary {
                 endDate,
                 startLocation,
                 endLocation,
+                transportation,
                 description,
                 image
             })
         });
 
-        return new Itinerary(tripName, startDate, endDate, startLocation, endLocation, description, image);
+        return new Itinerary(tripName, startDate, endDate, startLocation, endLocation, transportation, description, image);
     }
 
     /**
@@ -65,6 +67,7 @@ export default class Itinerary {
             data.endDate, 
             data.startLocation,
             data.endLocation, 
+            data.transportation,
             data.description, 
             data.image);
         data.activities.forEach(a => { // 'a' already in the format needed to create an Activity instance
@@ -139,6 +142,7 @@ export default class Itinerary {
 
         const vehicle = {
             id: 1,
+            profile: this.transportation,
             start: [tripStartLocation.lon, tripStartLocation.lat],
             end: [tripEndLocation.lon, tripEndLocation.lat],
             time_window: [tripStartTime, tripEndTime]
@@ -154,18 +158,6 @@ export default class Itinerary {
             if (activity.timeframes.length > 0) job.time_windows = activity.timeframes;
             jobs.push(job);
         });
-
-        // this.days.forEach((day, i) => {
-        //     if (i + 1 < this.days.length) { // it is not the last day of the trip
-        //         const nextDay = this.days[i + 1];
-        //         const night = {
-        //             id: i + 1,
-        //             location: [day.finishLocation.lon, day.finishLocation.lat],
-        //             service: nextDay.timeframe.earliestStartTime - day.timeframe.earliestFinishTime
-        //         };
-        //         jobs.push(night);
-        //     }
-        // });
 
         const req =
         {
