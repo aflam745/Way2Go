@@ -1,41 +1,135 @@
-import ScheduledActivity from "./Scheduling";
+import Activity from "./Activity";
 
 export default class Itinerary {
-    constructor(tripName, scheduledActivities, days, timeframe) {
+    constructor(id, tripName, startDate, endDate, description, image) {
+        this.id = id;
         this.tripName = tripName;
-        this.timeframe = timeframe; // start and end dates of the trip
-        this.days = days;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.description = description;
+        this.image = image;
 
-        this.activities = new Map(); // all definite activities in the itinerary, mapped by ID
+        this.activities = new Map(); // scheduled activities in the itinerary, mapped by ID
 
-        this.proposedActivities = new Map(); // activities that have been added but not yet accepted
+        this.stagedActivities = new Map(); // all activities including ones not yet optimized, mapped by ID
+        // value field uses descriptors 'Added', 'Updated', 'Deleted', and 'none' to represent modification made (if any)
     }
 
-    addActivity(activity) {
-        this.activities.set(activity.id, activity);
+    /**
+     * Creates a new itinerary from scratch and adds the itinerary to the DB.
+     * @param {*} tripName name of the trip
+     * @param {*} startDate start date of the trip
+     * @param {*} endDate end date of the trip
+     * @param {*} description optional description of the trip
+     * @param {*} image optional image to display with the trip
+     * @returns an Itinerary instance
+     */
+    static async createNewItinerary(tripName, startDate, endDate, description, image) {
+        const id = Date.now() + Math.floor(Math.random() * 1000)
+        await fetch("/createItinerary", {
+            method: 'POST',
+            body: JSON.stringify({
+                id,
+                tripName,
+                startDate,
+                endDate,
+                description,
+                image
+            })
+        });
+
+        return new Itinerary(tripName, startDate, endDate, description, image);
     }
 
-    deleteActivity(activity) {
-        this.activities.delete(activity.id);
-        this.scheduledActivities = this.scheduledActivities.filter(a => a.id !== activity.id);
-        this.proposedSchedule = this.proposedSchedule.filter(a => a.id !== activity.id);
+    /**
+     * Loads an existing itinerary from the DB.
+     * @param {*} id the ID of the itinerary
+     * @returns an Itinerary instance
+     */
+    static async loadItineraryFromDB(id) {
+        const res = await fetch("/loadItinerary", {
+            method: 'GET',
+            body: JSON.stringify(id)
+        });
+        const data = await res.json();
+        const itinerary = new Itinerary(data.id, data.tripName, data.startDate, data.endDate, data.description, data.image);
+        data.activities.forEach(a => { // 'a' already in the format needed to create an Activity instance
+            const newActivity = new Activity(a);
+            const newStagedActivity = newActivity.clone(); // create a clone so the staged version doesn't modify the original
+            itinerary.activities.set(a.id, newActivity);
+            itinerary.stagedActivities.set(a.id, { change: 'none', newStagedActivity })
+        });
+    
+        return itinerary;
     }
 
+    addActivity(
+        name,
+        isHotelStay,
+        location,
+        duration,
+        notes,
+        proposedStartTime,
+        proposedFinishTime
+    ) {
+        const newActivity = new Activity({
+            name,
+            isHotelStay,
+            location,
+            duration,
+            notes,
+            proposedStartTime,
+            proposedFinishTime
+        });
 
-    async optimizeRoute2() {
+        this.stagedActivities.set(newActivity.id, { change: 'Added', activity: newActivity });
+    }
+
+    deleteActivity(activityId) {
+        this.stagedActivities.set(
+            activityId, 
+            { 
+                change: 'Deleted', 
+                activity: this.stagedActivities.get(activityId).activity 
+            }
+        );
+    }
+
+    updateActivity(activityId, args) {
+        const activityToUpdate = this.stagedActivities.get(activityId).activity;
+        Object.keys(args).forEach(key => {
+            if (activityToUpdate.has(key)) {
+                activityToUpdate.set(key, args[key])
+            }
+        });
+        this.stagedActivities.set(
+            activityId,
+            {
+                change: 'Updated',
+                activity: activityToUpdate
+            }
+        );
+    }
+
+    async optimizeRoute() {
+
+        const activitiesToOptimize = this.stagedActivities.filter(a => a.change !== 'Deleted').map(a => a.activity);
+
         const jobs = [];
 
-        const firstStartTime = this.days[0].timeframe.earliestStartTime;
-        const lastFinishTime = this.days[this.days.length - 1].lastFinishTime;
+        // const firstStartTime = activitiesToOptimize[0]
+        // const lastFinishTime = this.days[this.days.length - 1].lastFinishTime;
 
-        const tripStartLocation = this.days[0].startLocation;
-        const tripFinishLocation = this.days[this.days.length - 1].finishLocation;
+        // const tripStartLocation = this.days[0].startLocation;
+        // const tripFinishLocation = this.days[this.days.length - 1].finishLocation;
+
+        tripStartLocation
 
         const vehicle = {
             id: 1,
             start: [tripStartLocation.lon, tripStartLocation.lat],
             end: [tripFinishLocation.lon, tripFinishLocation.lat],
-            time_window: [firstStartTime, lastFinishTime]
+            // time_window: [firstStartTime, lastFinishTime]
         };
 
         // Iterate through each activity and structure it as an ORS "job"
@@ -132,8 +226,8 @@ export default class Itinerary {
     }
 
     acceptOptimizedItinerary() {
-        this.scheduledActivities = [...this.proposedSchedule];
-        this.proposedSchedule = []; // reset the proposedSchedule
+        this.scheduledActivities = this.proposedSchedule.map(obj => [...obj.activity]);
+        this.proposedSchedule = this; // reset the proposedSchedule
     }
 
     declineOptimizedItinerary() {
