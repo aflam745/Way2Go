@@ -4,11 +4,10 @@ export default class Activity {
         isHotelStay,
         location,
         duration,
+        timeframes,
         notes,
-        proposedStartTime = null,
-        proposedFinishTime = null,
-        scheduledStartTime = null,
-        scheduledFinishTime = null,
+        startTime,
+        finishTime,
         id = Date.now() + Math.floor(Math.random() * 1000)
     } = {}) {
         this.id = id;
@@ -16,27 +15,21 @@ export default class Activity {
         this.name = name;
         this.location = location;
         this.duration = duration;
+        this.timeframes = timeframes;
         this.notes = notes;
-
-        // Temporary scheduling set once the optimization algorithm is run
-        this.proposedStartTime = proposedStartTime;
-        this.proposedFinishTime = proposedFinishTime;
-
-        // Set once a user accepts the optimized schedule
-        this.scheduledStartTime = scheduledStartTime;
-        this.scheduledFinishTime = scheduledFinishTime;
+        this.startTime = startTime;
+        this.finishTime = finishTime;
     }
 
 
     clone = () => new Activity({
+        id: this.id,
         name: this.name,
         location: {...this.location},
         duration: this.duration,
+        timeframes: this.timeframes,
         notes: this.notes,
-        id: this.id,
-        proposedStartTime: this.proposedStartTime,
-        proposedFinishTime: this.proposedFinishTime,
-        scheduledStartTime: this.scheduledStartTime,
-        scheduledFinishTime: this.scheduledFinishTime
+        startTime: this.startTime,
+        finishTime: this.finishTime
     })
 }

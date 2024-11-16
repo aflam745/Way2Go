@@ -1,11 +1,13 @@
 import Activity from "./Activity";
 
 export default class Itinerary {
-    constructor(id, tripName, startDate, endDate, description, image) {
+    constructor(id, tripName, startDate, endDate, startLocation, endLocation, description, image) {
         this.id = id;
         this.tripName = tripName;
-        this.startDate = startDate;
-        this.endDate = endDate;
+        this.startDate = startDate; // earliest time activities can be scheduled
+        this.endDate = endDate; // latest time activities can be scheduled
+        this.startLocation = startLocation;
+        this.endLocation = endLocation;
         this.description = description;
         this.image = image;
 
@@ -20,11 +22,13 @@ export default class Itinerary {
      * @param {*} tripName name of the trip
      * @param {*} startDate start date of the trip
      * @param {*} endDate end date of the trip
+     * @param {*} startLocation start location of the trip
+     * @param {*} endLocation end location of the trip
      * @param {*} description optional description of the trip
      * @param {*} image optional image to display with the trip
      * @returns an Itinerary instance
      */
-    static async createNewItinerary(tripName, startDate, endDate, description, image) {
+    static async createNewItinerary(tripName, startDate, endDate, startLocation, endLocation, description, image) {
         const id = Date.now() + Math.floor(Math.random() * 1000)
         await fetch("/createItinerary", {
             method: 'POST',
@@ -33,12 +37,14 @@ export default class Itinerary {
                 tripName,
                 startDate,
                 endDate,
+                startLocation,
+                endLocation,
                 description,
                 image
             })
         });
 
-        return new Itinerary(tripName, startDate, endDate, description, image);
+        return new Itinerary(tripName, startDate, endDate, startLocation, endLocation, description, image);
     }
 
     /**
@@ -52,7 +58,15 @@ export default class Itinerary {
             body: JSON.stringify(id)
         });
         const data = await res.json();
-        const itinerary = new Itinerary(data.id, data.tripName, data.startDate, data.endDate, data.description, data.image);
+        const itinerary = new Itinerary(
+            data.id, 
+            data.tripName, 
+            data.startDate, 
+            data.endDate, 
+            data.startLocation,
+            data.endLocation, 
+            data.description, 
+            data.image);
         data.activities.forEach(a => { // 'a' already in the format needed to create an Activity instance
             const newActivity = new Activity(a);
             const newStagedActivity = newActivity.clone(); // create a clone so the staged version doesn't modify the original
@@ -68,24 +82,23 @@ export default class Itinerary {
         isHotelStay,
         location,
         duration,
-        notes,
-        proposedStartTime,
-        proposedFinishTime
+        timeframes,
+        notes
     ) {
         const newActivity = new Activity({
             name,
             isHotelStay,
             location,
             duration,
-            notes,
-            proposedStartTime,
-            proposedFinishTime
+            timeframes,
+            notes
         });
 
         this.stagedActivities.set(newActivity.id, { change: 'Added', activity: newActivity });
     }
 
     deleteActivity(activityId) {
+        // do not immediately delete but rather mark as 'Deleted' so we can actually delete it once we run the optimization
         this.stagedActivities.set(
             activityId, 
             { 
@@ -113,27 +126,26 @@ export default class Itinerary {
 
     async optimizeRoute() {
 
-        const activitiesToOptimize = this.stagedActivities.filter(a => a.change !== 'Deleted').map(a => a.activity);
+        // filter out any activities that have been deleted and then get the raw activity
+        const activitiesToOptimize = Array.from(this.stagedActivities.values()).filter(a => a.change !== 'Deleted').map(a => a.activity);
 
         const jobs = [];
 
-        // const firstStartTime = activitiesToOptimize[0]
-        // const lastFinishTime = this.days[this.days.length - 1].lastFinishTime;
+        tripStartLocation = activitiesToOptimize.startLocation;
+        tripEndLocation = activitiesToOptimize.endLocation;
 
-        // const tripStartLocation = this.days[0].startLocation;
-        // const tripFinishLocation = this.days[this.days.length - 1].finishLocation;
-
-        tripStartLocation
+        tripStartTime = activitiesToOptimize.startTime;
+        tripEndTime = activitiesToOptimize.endTime;
 
         const vehicle = {
             id: 1,
             start: [tripStartLocation.lon, tripStartLocation.lat],
-            end: [tripFinishLocation.lon, tripFinishLocation.lat],
-            // time_window: [firstStartTime, lastFinishTime]
+            end: [tripEndLocation.lon, tripEndLocation.lat],
+            time_window: [tripStartTime, tripEndTime]
         };
 
         // Iterate through each activity and structure it as an ORS "job"
-        this.activities.forEach(activity => {
+        activitiesToOptimize.forEach(activity => {
             const job = {
                 id: activity.id,
                 location: [activity.location.lon, activity.location.lat],
@@ -143,17 +155,17 @@ export default class Itinerary {
             jobs.push(job);
         });
 
-        this.days.forEach((day, i) => {
-            if (i + 1 < this.days.length) { // it is not the last day of the trip
-                const nextDay = this.days[i + 1];
-                const night = {
-                    id: i + 1,
-                    location: [day.finishLocation.lon, day.finishLocation.lat],
-                    service: nextDay.timeframe.earliestStartTime - day.timeframe.earliestFinishTime
-                };
-                jobs.push(night);
-            }
-        });
+        // this.days.forEach((day, i) => {
+        //     if (i + 1 < this.days.length) { // it is not the last day of the trip
+        //         const nextDay = this.days[i + 1];
+        //         const night = {
+        //             id: i + 1,
+        //             location: [day.finishLocation.lon, day.finishLocation.lat],
+        //             service: nextDay.timeframe.earliestStartTime - day.timeframe.earliestFinishTime
+        //         };
+        //         jobs.push(night);
+        //     }
+        // });
 
         const req =
         {
@@ -172,66 +184,68 @@ export default class Itinerary {
 
         const data = await response.json();
 
-        function getActivityById(id) {
-            return this.activities.get(id);
+        const getActivityById = id => this.stagedActivities.get(id);
+
+        function calculateFirstMidnight(timestamp) {
+            const date = new Date(timestamp * 1000);
+            date.setHours(24, 0, 0, 0);
+            return Math.floor(date.getTime() / 1000);
         }
 
         // now assign activities to proper days
         const trip = data.routes[0];
         const steps = trip.steps;
+
+        const days = [];
+        let day = [];
+
+        let nextMidnight = calculateFirstMidnight(tripStartTime);
+
         steps.forEach(step => {
-            const { id, arrival, service } = step;
+            const { id, arrival, service, waiting_time: waitingTime } = step;
 
-            if (id < 1000) { // This is a night at a hotel
-                const dayNumber = id;
-                const nightStay = {
-                    id,
-                    arrival,
-                    service,
-                    location: this.days[dayNumber].finishLocation
-                };
+            const stagedActivity = getActivityById(id);
+            const activity = stagedActivity.activity;
+            activity.startTime = arrival + waitingTime;
+            activity.finishTime = arrival + waitingTime + service;
 
-                const scheduledNight = new ScheduledActivity(
-                    nightStay,
-                    this.days[dayNumber],
-                    arrival,
-                    arrival + service
-                );
-                this.proposedSchedule.push(scheduledNight);
-            } else { // This is a regular activity
-                const matchedActivity = getActivityById(id);
-                if (matchedActivity) {
-                    const dayNumber = this.#determineDay(arrival);
-                    const scheduledDay = this.days[dayNumber];
+            // if the activity starts after midnight
+            if (activity.startTime >= nextMidnight) {
+                // day is completed
+                days.push(day)
+                // reset day and add the activity to the next day as well
+                day = [activity];
+                // set the next midnight
+                nextMidnight += 86400;
+            }
 
-                    const scheduledActivity = new ScheduledActivity(
-                        matchedActivity,
-                        scheduledDay,
-                        arrival,
-                        arrival + service
-                    );
-                    this.proposedSchedule.push(scheduledActivity);
-                }
+            // push the actvity to the current day
+            day.push(activity);
+
+            // if the ending time of the activity goes past midnight
+            if (activity.endTime > nextMidnight) {
+                // day is completed
+                days.push(day)
+                // reset day and add the activity to the next day as well
+                day = [activity];
+                // set the next midnight
+                nextMidnight += 86400;
             }
         });
 
-
-    }
-
-    #determineDay(arrivalTime) {
-        return this.days.findIndex(day =>
-            arrivalTime >= day.timeframe.earliestStartTime &&
-            arrivalTime <= day.timeframe.latestFinishTime
-        ) + 1;
+        return days;        
     }
 
     acceptOptimizedItinerary() {
-        this.scheduledActivities = this.proposedSchedule.map(obj => [...obj.activity]);
-        this.proposedSchedule = this; // reset the proposedSchedule
+        const newActivities = new Map();
+        this.activities = this.stagedActivities.forEach((a, _) => {
+            const activity = a.activity;
+            const activityClone = activity.clone();
+            this.newActivies.set(activityClone.id, activityClone);
+        })
+        this.activities = newActivities;
     }
 
-    declineOptimizedItinerary() {
-        this.proposedSchedule = []; // reset the proposedSchedule
-    }
+    declineOptimizedItinerary() {    }
 
 }
