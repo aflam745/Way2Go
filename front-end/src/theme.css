@@ -1,5 +1,11 @@
 :root {
   --white: white;
+  --bg-white: #f9f9f9;
+  --active-gray: #e8e8e8;
+  --border-gray: #ddd;
+  --border-light-gray: #eaeaea;
+  --shadow: rgba(0,0,0,0.1);
+  --active-shadow: rgba(0,0,0,0.15);
 
   /* I am using the bootstrap colors as a baseline theme for the app */
   --blue: #007bff;
