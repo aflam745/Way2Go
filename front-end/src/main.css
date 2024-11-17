@@ -1,0 +1,41 @@
+@import url("theme.css");
+/* NOTE: We could refactor the layout to use grid and subgrid */
+
+/* Centers the header */
+body>header {
+  display: flex;
+  justify-content: center;
+}
+
+/* General Styles */
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: var(--bg-white);
+  font-size: 16px;
+  line-height: 1.5;
+  font-family: Inter, Arial, sans-serif;
+}
+
+/* Button Styling */
+
+/* NOTE:
+ * Use of :where is to ensure that baseline 
+ * styles can always be more easily overridden 
+ */
+
+:where(button) {
+  background-color: var(--blue);
+  color: var(--white);
+  border: none;
+  padding: 10px 15px;
+  font-size: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+:where(button:hover) {
+  background-color: var(--hover-blue);
+}
