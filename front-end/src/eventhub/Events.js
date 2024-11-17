@@ -4,6 +4,5 @@
 export const Events = {
     NewActivity: 'NewActivity',
     EditActivity: 'EditActivity',
-
     StoreActivity: 'StoreActivity',
 };
