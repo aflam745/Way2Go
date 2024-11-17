@@ -1,6 +1,7 @@
-import DirectionsComponent from "./components/DirectionsComponent/DirectionsComponent.js";
+import { ItineraryFormComponent } from "./components/ItineraryFormComponent/ItineraryFormComponent.js";
 
 const app = document.getElementById('app');
 
-// Services
-const taskRepository = new DirectionsComponent();
+const itineraryForm = new ItineraryFormComponent();
+
+app.appendChild(itineraryForm.render());
