@@ -20,7 +20,7 @@ export class MapComponent extends BaseComponent {
         this.#container = document.createElement('div');
         this.#container.style.height = '400px';
         this.#container.style.width = '100%';
-        this.#container.id = 'map'; // Required for Leaflet to initialize
+        this.#container.id = 'map'; 
     }
 
     #loadLeafletResources(callback) {
@@ -30,8 +30,7 @@ export class MapComponent extends BaseComponent {
         mapScript.onload = callback.bind(this);
         document.head.appendChild(mapScript);
 
-        // Load Leaflet CSS
-        this.loadCSS('MapComponent'); // Ensure you have a MapComponent.css file
+        this.loadCSS('MapComponent');
         const mapStyles = document.createElement('link');
         mapStyles.rel = 'stylesheet';
         mapStyles.href = "https://unpkg.com/leaflet/dist/leaflet.css";
