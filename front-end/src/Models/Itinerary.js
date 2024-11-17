@@ -1,4 +1,5 @@
 import Activity from "./Activity";
+import EventHub from "../eventhub/Event";
 
 export default class Itinerary {
     constructor(id, tripName, startTime, endTime, startLocation, endLocation, transportation, description, image) {
@@ -13,6 +14,24 @@ export default class Itinerary {
         this.image = image;
 
         this.activities = new Map(); // Aactivities in the itinerary, mapped by ID
+
+        this.subscribeToEvents();
+    }
+
+    subscribeToEvents() {
+        const hub = EventHub.getInstance();
+
+        hub.subscribe(Events.NewActivity, activityData => {
+            this.addActivity(activityData);
+        });
+
+        hub.subscribe(Events.DeleteActivity, activityId => {
+            this.deleteActivity(activityId);
+        });
+
+        hub.subscribe(Events.EditActivity, activityData => {
+            this.updateActivity(activityData.id, activityData);
+        });
     }
 
     /**
