@@ -59,7 +59,8 @@ export class ActivityItemComponent extends BaseComponent {
 
     const deleteActivityButton = this.#container.querySelector('.deleteActivity');
     deleteActivityButton.addEventListener('click', (e) => {
-      
+      e.stopPropagation();
+      this.#container.remove();
     })
   }
 
