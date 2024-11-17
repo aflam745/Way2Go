@@ -1,6 +1,6 @@
 import { BaseComponent } from "../BaseComponent/BaseComponent";
 
-export class IteneraryComponent extends BaseComponent {
+export class ItineraryComponent extends BaseComponent {
     #container = null;
 
     constructor(){
