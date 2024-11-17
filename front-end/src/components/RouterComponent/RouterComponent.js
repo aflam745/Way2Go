@@ -29,6 +29,9 @@ export class RouterComponent extends BaseComponent {
 
     const activityPage = new ActivityPageComponent()
 
+    // Before rendering the new page the old page needs to be cleared
+    this.conatiner.replaceChildren()
+
     // Match based on Regex?
     switch (url.pathname) {
       case '/':
