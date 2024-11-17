@@ -5,6 +5,7 @@ export default class Activity {
         location,
         duration,
         timeframes,
+        day,
         notes,
         startTime,
         finishTime,
@@ -16,6 +17,7 @@ export default class Activity {
         this.location = location;
         this.duration = duration;
         this.timeframes = timeframes;
+        this.day = day;
         this.notes = notes;
         this.startTime = startTime;
         this.finishTime = finishTime;
@@ -28,6 +30,7 @@ export default class Activity {
         location: {...this.location},
         duration: this.duration,
         timeframes: this.timeframes,
+        day: this.day,
         notes: this.notes,
         startTime: this.startTime,
         finishTime: this.finishTime

@@ -1,7 +1,7 @@
 import Activity from "./Activity";
 
 export default class Itinerary {
-    constructor(id, tripName, startDate, endDate, startLocation, endLocation, transportation description, image) {
+    constructor(id, tripName, startDate, endDate, startLocation, endLocation, transportation, description, image) {
         this.id = id;
         this.tripName = tripName;
         this.startDate = startDate; // earliest time activities can be scheduled
@@ -70,7 +70,7 @@ export default class Itinerary {
             data.transportation,
             data.description, 
             data.image);
-        data.activities.forEach(a => { // 'a' already in the format needed to create an Activity instance
+        data.activities.forEach(a => { // assume 'a' already in the format needed to create an Activity instance
             const newActivity = new Activity(a);
             const newStagedActivity = newActivity.clone(); // create a clone so the staged version doesn't modify the original
             itinerary.activities.set(a.id, newActivity);
@@ -134,11 +134,11 @@ export default class Itinerary {
 
         const jobs = [];
 
-        tripStartLocation = activitiesToOptimize.startLocation;
-        tripEndLocation = activitiesToOptimize.endLocation;
+        tripStartLocation = this.startLocation;
+        tripEndLocation = this.endLocation;
 
-        tripStartTime = activitiesToOptimize.startTime;
-        tripEndTime = activitiesToOptimize.endTime;
+        tripStartTime = this.startDate;
+        tripEndTime = this.endDate;
 
         const vehicle = {
             id: 1,
@@ -175,57 +175,37 @@ export default class Itinerary {
         });
 
         const data = await response.json();
+        
+        // Helper to calculate the day number relative to startDate
+        const calculateDayNumber = timestamp => {
+            return Math.floor((timestamp - this.startDate) / 86400) + 1;
+        };
 
         const getActivityById = id => this.stagedActivities.get(id);
 
-        function calculateFirstMidnight(timestamp) {
-            const date = new Date(timestamp * 1000);
-            date.setHours(24, 0, 0, 0);
-            return Math.floor(date.getTime() / 1000);
-        }
-
-        // now assign activities to proper days
         const trip = data.routes[0];
         const steps = trip.steps;
-
-        const days = [];
-        let day = [];
-
-        let nextMidnight = calculateFirstMidnight(tripStartTime);
 
         steps.forEach(step => {
             const { id, arrival, service, waiting_time: waitingTime } = step;
 
             const stagedActivity = getActivityById(id);
             const activity = stagedActivity.activity;
+
             activity.startTime = arrival + waitingTime;
             activity.finishTime = arrival + waitingTime + service;
 
-            // if the activity starts after midnight
-            if (activity.startTime >= nextMidnight) {
-                // day is completed
-                days.push(day)
-                // reset day and add the activity to the next day as well
-                day = [activity];
-                // set the next midnight
-                nextMidnight += 86400;
-            }
+            const startDay = calculateDayNumber(activity.startTime);
+            const endDay = calculateDayNumber(activity.finishTime);
 
-            // push the actvity to the current day
-            day.push(activity);
+            activity.day = [startDay];
 
-            // if the ending time of the activity goes past midnight
-            if (activity.endTime > nextMidnight) {
-                // day is completed
-                days.push(day)
-                // reset day and add the activity to the next day as well
-                day = [activity];
-                // set the next midnight
-                nextMidnight += 86400;
+            // if it straddles midnight, also assign it to the next day
+            if (endDay > startDay) {
+                activity.day.push(endDay);
             }
         });
 
-        return days;        
     }
 
     acceptOptimizedItinerary() {
