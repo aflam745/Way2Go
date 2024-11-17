@@ -30,10 +30,23 @@ export class ItineraryFormComponent extends BaseComponent {
         <br>
 
         <label for="picture">Insert Picture:</label>
-      
+        <input type="file" id="picture" name="picture" accept="image/*">
+        <br>
 
-        <button id="add-itinerary">Create Itinerary</button>
-        <button id="clear">Clear</button>
+        <label for="start-date">Start Date:</label>
+        <input type="date" id="start-date" name="start-date">
+        <br>
+
+        <label for="end-date">End Date:</label>
+        <input type="date" id="end-date" name="end-date">
+        <br>
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" rows="4" cols="30" placeholder="Add a description..."></textarea>
+        <br>
+
+        <button id="add-itinerary" type="submit">Create Itinerary</button>
+        <button id="clear" type="reset">Clear</button>
       </form>
     `;
   }
