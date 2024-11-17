@@ -120,7 +120,7 @@ export class ActivityFormComponent extends BaseComponent {
 
   // Clears the form
   #clearInputs() {
-    this.#container.querySelector('form')?.reset()
+    this.#container.querySelector('form')?.reset();
   }
 
   /*

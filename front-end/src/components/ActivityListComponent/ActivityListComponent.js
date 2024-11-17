@@ -43,7 +43,6 @@ export class ActivityListComponent extends BaseComponent {
 
   #addTaskToList(activityData) {
     const activityList = this.#getTaskListElement();
-    const activityContainer = document.createElement('li');
 
     const activity = new ActivityItemComponent(activityData);
     activityList.appendChild(activity.render());
