@@ -1,0 +1,14 @@
+.leaflet-tooltip.leaflet-label {
+    font-size: 15px;
+    background-color: white;
+    color: black;
+    opacity: 1;
+    border: 1px solid black;
+    border-radius: 3px;
+    padding: 3px;
+    margin-left: 30px;
+    max-width: 12rem;
+    width: max-content;
+    display: block;
+    text-wrap: balance;
+}
