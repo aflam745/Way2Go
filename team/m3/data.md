@@ -11,7 +11,13 @@
     - `coordinates` (object): an object containing the x- and y-coordinates of the location
     - `activityDuration` (float): the amount of time to be spent at an activity
 
-### 2. Grouped Activities
+
+    For M3, we have since updated the Activity to store all location data in a location object, containing attributues lon, lat, and address. The Activity class also contains details about a generic name the user can enter and a list of timeframes in which the activity can be scheduled within. For example, if the user wants to visit a museum on their trip, but the museum is only open 2 days a week between 9 and 5, the user can specify those timeframes for both days. There is also a day attribute for an Activity which represents what day(s) the activity is scheduled for. If an activity straddles midnight, then it is scheduled for 2 days.
+
+
+- The concept of grouped itineraries has been REMOVED for M3. Since you can enter activities with fixed times, we didn't think this was necessary.
+
+~~### 2. Grouped Activities~~
 
 - **Description**: A group of activities manually linked together by the user, overriding the most efficient route determined by the algorithm. This is useful in the instance where a user knows they want to have a fixed part of the schedule; for example, getting lunch at a specific restaurant directly after leaving a museum.
 - **Attributes**:
@@ -19,6 +25,7 @@
     - `activities` (list): an ordered list of the activities grouped together
     - `groupDuration` (float): the total amount of time of the group activities, including travel time
     - `groupDistance` (float): total distance in miles or km of the group
+
 
 
 ### 3. Itinerary
@@ -31,6 +38,9 @@
     - `itineraryDistance` (float): total distance in miles or km of the trip
     - `roundTrip` (boolean): indicates if the itinerary should finish at the starting location
     - `ownerId` (string): ID of the user who owns this itinerary
+
+
+    We have since updated this data for M3. The id is now just an int (or long) because it allows for better interactability with the ORS API. Additionally, the itinerary now contains attributes about the name of the trip, start time of the trip, end time of the trip, the mode of transportation to be used on the trip, and an array to contain staged activities that have not yet been added to the main activities array.
 
 ### 4. User
 
@@ -56,3 +66,5 @@
     - Official location names, coordinates, and directions are provided by the API
 - **API**:
     - openrouteservice provides directions and an embeddable map, and this will be used to determine distances between points as well as displaying the optimal route on the map.
+    
+  For M3, we have realized we are using two additional APIs. Leaflet provides an interactive map which we can embed on our page and use to display the points and the path between them. We are also using Nominatim, which will provide search results for an address a user enters.
