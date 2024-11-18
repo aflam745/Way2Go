@@ -33,7 +33,10 @@ export class ActivityListComponent extends BaseComponent {
   // Sets up the inner HTML of the container
   #setupContainerContent() {
     this.#container.innerHTML = `
-      <h2>Activity List</h2>
+      <div>
+        <h2>Activity List</h2>
+        <button id="generateItinerary">Generate Itinerary</button>
+      </div>
       <ul id="activityList"></ul>
     `;
   }
