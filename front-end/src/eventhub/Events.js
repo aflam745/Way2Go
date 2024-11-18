@@ -4,5 +4,6 @@
 export const Events = {
     NewActivity: 'NewActivity',
     EditActivity: 'EditActivity',
+    SubmitEditActivity: 'SubmitEditActivity',
     StoreActivity: 'StoreActivity',
 };
