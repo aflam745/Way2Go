@@ -1,4 +1,4 @@
-import { ItineraryComponent } from "./components/ItineraryComponent/ItineraryComponent";
+//import { ItineraryComponent } from "./components/ItineraryComponent/ItineraryComponent";
 
 import { ActivityPageComponent } from "./components/ActivityPageComponent/ActivityPageComponent.js";
 //import DirectionsComponent from "./components/DirectionsComponent/DirectionsComponent.js";
