@@ -50,7 +50,7 @@ export class ActivityItemDetailsComponent extends BaseComponent {
 
     #displayData(){
         this.#container.querySelector('#displaySpecificDay').textContent = this.activityData.specificDay;
-        this.#container.querySelector('#displayDay').textContent = this.activityData.day;
+        this.#container.querySelector('#displayDay').textContent = this.activityData.daySelection;
         this.#container.querySelector('#displayAddress').textContent = this.activityData.address;
         this.#container.querySelector('#displayDuration').textContent = this.activityData.duration;
         this.#container.querySelector('#displayOpenTime').textContent = this.activityData.openTime;
