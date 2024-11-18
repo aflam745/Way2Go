@@ -1,14 +1,17 @@
 import { BaseComponent } from "../BaseComponent/BaseComponent.js";
 import { EventHub } from "../../eventhub/EventHub.js";
 import { Events } from "../../eventhub/Events.js";
+import { ActivityDatabase } from "../../Models/ActivityDatabase.js";
 
 export class ActivityFormComponent extends BaseComponent {
   /** @type HTMLDivElement | null */
   #container = null;
+  #activityDB = null;
 
   constructor() {
     super();
     this.loadCSS('ActivityFormComponent');
+    this.#activityDB = new ActivityDatabase('ActivityDB');
   }
 
   render() {
@@ -28,39 +31,41 @@ export class ActivityFormComponent extends BaseComponent {
       <form>
         <h2>Add New Activity</h2>
 
+        <input type="hidden" id="id" name="id">
+
         <label for="specific-day">Must happen on specific day:</label>
         <select id="specific-day" name="specificDay">
-          <option value="no">No</option>
-          <option value="yes">Yes</option>
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
         </select>
         <br>
 
         <div id="choose-day" style="display: none">
           <label for="day-selection">Select day:</label>
           <select id="day-selection" name="daySelection">
-            <option value="day-1">Day 1</option>
-            <option value="day-2">Day 2</option>
-            <option value="day-3">Day 3</option>
+            <option value="Day 1">Day 1</option>
+            <option value="Day 2">Day 2</option>
+            <option value="Day 3">Day 3</option>
           </select>
           <br>
         </div>
 
         <label for="location">Name of location:</label>
-        <input type="text" id="location" name="location" placeholder="Enter location">
+        <input type="text" id="location" name="location" placeholder="Enter location" required>
         <br>
 
         <label for="address">Address:</label>
-        <input type="text" id="address" name="address">
+        <input type="text" id="address" name="address" required>
         <br>
 
         <label for="duration">Duration:</label>
-        <input type="text" id="duration" name="duration" class="time-input">
+        <input type="time" id="duration" name="duration" class="time-input" required>
         <br>
 
         <label for="open-time">Opens at:</label>
-        <input type="text" id="open-time" name="openTime" class="time-input">
+        <input type="time" id="open-time" name="openTime" class="time-input">
         <label for="close-time">Closes at:</label>
-        <input type="text" id="close-time" name="closeTime" class="time-input">
+        <input type="time" id="close-time" name="closeTime" class="time-input">
         <br>
 
         <label for="notes">Notes:</label>
@@ -79,6 +84,17 @@ export class ActivityFormComponent extends BaseComponent {
 
     /** @type HTMLFormElement */
     const submissionForm = this.#container.querySelector('form')
+
+    const specificDaySelector = this.#container.querySelector('#specific-day');
+    const chooseDaySelector = this.#container.querySelector('#choose-day');
+
+    specificDaySelector.addEventListener('change', (e) => {
+      if(specificDaySelector.value === "Yes"){
+        chooseDaySelector.style.display = "block";
+      } else {
+        chooseDaySelector.style.display = "none";
+      }
+    })
 
     clearActivityBtn.addEventListener('click', (e) => {
       e.preventDefault();
@@ -99,14 +115,44 @@ export class ActivityFormComponent extends BaseComponent {
     * @param {FormData} formData  - Data from the form in formData format
     */
   #handleAddActivity2(formData) {
-    const currentTime = new Date().toLocaleTimeString();
-    const randThreeDigitInt = (Math.floor((Math.random() * 900) + 100)).toString();
-    const activityId = { activityId: currentTime + "_" + randThreeDigitInt}
-    this.#publishNewActivity2({
-      ...Object.fromEntries(formData),
-      ...activityId,
-    });
-    this.#clearInputs()
+    if(Object.fromEntries(formData).id.length > 0){
+      this.#publishEditActivity(Object.fromEntries(formData));
+      this.#changeSubmitText();
+    } else {
+      console.log("NOT HERE");
+      const currentTime = new Date().toLocaleTimeString();
+      const randThreeDigitInt = (Math.floor((Math.random() * 900) + 100)).toString();
+      const id = currentTime + "_" + randThreeDigitInt;
+      const activityId = { id: id.replace(/[\s:]/g, '_') }
+
+      this.#publishNewActivity2({
+        ...Object.fromEntries(formData),
+        ...activityId,
+      });
+    }
+
+    this.#clearInputs();
+  }
+
+  #publishEditActivity(data){
+    const hub = EventHub.getInstance();
+    hub.publish(Events.SubmitEditActivity, data);
+
+    this.#activityDB.deleteActivity(data.id)
+      .then((message) => {
+        console.log(message);
+      })
+      .catch((error) => {
+        console.error("Failed to delete activity from ActivityDB:", error);
+      });
+
+    this.#activityDB.addActivity(data)
+      .then((message) => {
+        console.log(message);
+      })
+      .catch((error) => {
+        console.error("Failed to add activity to ActivityDB:", error);
+      });
   }
 
   /**
@@ -116,6 +162,14 @@ export class ActivityFormComponent extends BaseComponent {
     const hub = EventHub.getInstance();
     hub.publish(Events.NewActivity, data);
     hub.publish(Events.StoreActivity, data);
+
+    this.#activityDB.addActivity(data)
+      .then((message) => {
+        console.log(message);
+      })
+      .catch((error) => {
+        console.error("Failed to add activity to IndexedDB:", error);
+      });
   }
 
   // Clears the form
@@ -134,7 +188,17 @@ export class ActivityFormComponent extends BaseComponent {
       // This query searches for either an input, select, or textarea and then sets the value based on the in activityData
       const query = `:is(input[name="${key}"], select[name="${key}"], textarea[name="${key}"])`
       const input = this.#container.querySelector(query)
-      input.value = val
+      if(input !== null){
+        input.value = val
+      }
     }
+
+    this.#changeSubmitText();
+  }
+
+  #changeSubmitText(){
+    const submitButton = this.#container.querySelector('#add-activity');
+
+    submitButton.innerText = (submitButton.innerText === "Edit Activity") ? "Add Activity" : "Edit Activity";
   }
 }

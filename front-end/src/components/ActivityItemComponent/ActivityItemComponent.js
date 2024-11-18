@@ -2,14 +2,17 @@ import { BaseComponent } from "../BaseComponent/BaseComponent.js";
 import { ActivityItemDetailsComponent } from "../ActivityItemDetailsComponent/ActivityItemDetailsComponent.js";
 import { EventHub } from "../../eventhub/EventHub.js";
 import { Events } from "../../eventhub/Events.js";
+import { ActivityDatabase } from "../../Models/ActivityDatabase.js";
 
 export class ActivityItemComponent extends BaseComponent {
   #container = null;
+  #activityDB = null;
 
   constructor(activityData = {}) {
     super();
     this.loadCSS('ActivityItemComponent');
     this.activityData = activityData;
+    this.#activityDB = new ActivityDatabase('ActivityDB');
   }
 
   render() {
@@ -26,7 +29,7 @@ export class ActivityItemComponent extends BaseComponent {
   #createContainer(){
     this.#container = document.createElement('div');
     this.#container.classList.add('activity-item');
-    this.#container.id = 'activityItem';
+    this.#container.id = 'activityItem_' + this.activityData.id;
   }
 
   #setupContainerItemContent() {
@@ -60,6 +63,15 @@ export class ActivityItemComponent extends BaseComponent {
     const deleteActivityButton = this.#container.querySelector('.deleteActivity');
     deleteActivityButton.addEventListener('click', (e) => {
       e.stopPropagation();
+
+      this.#activityDB.deleteActivity(this.activityData.id)
+        .then((message) => {
+          console.log(message);
+        })
+        .catch((error) => {
+          console.error("Failed to delete activity from ActivityDB:", error);
+        });
+
       this.#container.remove();
     })
   }
