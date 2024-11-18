@@ -4,7 +4,7 @@
 - [Continued work on basic activity form page](https://github.com/aflam745/CS326Team36Project/commit/0b0d1d0c91f8fe885b6e9c151085c74c0b49fa58)
 - [Created Initial skeleton for the application](https://github.com/aflam745/CS326Team36Project/commit/8d0e8d3e4397b1c7b04e89324a0433f54763844b)
 
-## Emmanuel Kon
+## Emmanuel K
 
 Emmanuel will be working on the UI mockup and documentation with a component.
 
