@@ -119,7 +119,6 @@ export class ActivityFormComponent extends BaseComponent {
       this.#publishEditActivity(Object.fromEntries(formData));
       this.#changeSubmitText();
     } else {
-      console.log("NOT HERE");
       const currentTime = new Date().toLocaleTimeString();
       const randThreeDigitInt = (Math.floor((Math.random() * 900) + 100)).toString();
       const id = currentTime + "_" + randThreeDigitInt;
