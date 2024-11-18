@@ -14,7 +14,7 @@ Going on vacation should be a time of relaxation and comfort; however, planning 
 
 Young adults in particular may be exceedingly busy, so the application should provide a simple yet fast and effective interface which they can quickly use to get a schedule that meets their needs.
 
-Older adults may require a more granular control of what exactly they want to do, so our application may also introduce further constraints that one can add to get a better match for a schedule.
+Older adults can be busy or less busy depending on their circumstances, but both groups benefit from having a simple and fast user interface.
 
 ## Why These Users Matter
 Young adults provide the backbone for the new workforce, but vacations are essential in order to ensure that they do not get burnt out and begin performing at subpar levels, so it is vital that they are able to effectively plan these vacations with minimal stress such that they can fully relax.
