@@ -3,6 +3,9 @@
 ## Milestone 3
 
 ## Jimmy Jiang
+- [Initial commit itinerary form](https://github.com/aflam745/CS326Team36Project/commit/e56b27fff5534fcdaabc54cda1d54c73ddcd39a6)
+- [Finish itinerary form](https://github.com/aflam745/CS326Team36Project/commit/77c5ee4b3477bc008e0209e5a1e32c3875474ac4)
+- [Activity form delete button](https://github.com/aflam745/CS326Team36Project/commit/be6f226fd40180523cfc4afd8990b1abf6505489)
 
 ## Andrew Flammia
 
