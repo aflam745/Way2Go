@@ -1,5 +1,22 @@
 # Team Report
 
+## Milestone 3
+
+## Jimmy Jiang
+
+## Andrew Flammia
+
+## Owen Gibbons
+
+## Emmanuel Kon
+
+## Jason Simmonds
+
+## Robert Winfield
+
+
+## Milestone 2
+
 ## Jimmy Jiang
 
 - [Merged Branch](https://github.com/aflam745/CS326Team36Project/commit/55c900b7d016a65917c20c2dcb311a2370be3662)
