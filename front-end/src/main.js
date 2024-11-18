@@ -1,5 +1,5 @@
 import { ActivityPageComponent } from "./components/ActivityPageComponent/ActivityPageComponent.js";
-import DirectionsComponent from "./components/DirectionsComponent/DirectionsComponent.js";
+//import DirectionsComponent from "./components/DirectionsComponent/DirectionsComponent.js";
 import { RouterComponent } from "./components/RouterComponent/RouterComponent.js";
 const app = document.getElementById('app');
 
