@@ -1,0 +1,53 @@
+@import url("/theme.css");
+
+.activity-form-container {
+  width: 100%;
+  max-width: 800px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.activity-form {
+  width: 650px;
+  padding: 10px;
+  font-size: 1rem;
+  margin-bottom: 10px;
+  background: white;
+  border: 1px solid var(--border-light-gray);
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  box-sizing: border-box;
+  display: flex;
+}
+
+/* Styling Form Attributes */
+.activity-form textarea {
+  min-width: 500px;
+  max-width: 600px;
+  min-height: 95px;
+  max-height: 150px;
+}
+
+.activity-form label + textarea {
+  display: block;
+}
+
+.activity-form input {
+  box-sizing: border-box;
+  padding: 4px;
+}
+
+/* Applies styling to all input, textarea, and select that are children of activity form */
+.activity-form :is(input, textarea, select) {
+  border: 1px solid var(--border-gray);
+  background: #fff;
+  border-radius: 5px;
+}
+
+.activity-form h2 {
+  margin-top: 0;
+  font-size: 1.5rem;
+  text-align: center;
+}
