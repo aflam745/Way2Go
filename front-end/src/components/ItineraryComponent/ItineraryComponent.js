@@ -4,7 +4,8 @@ export class ItineraryComponent extends BaseComponent {
     #container = null;
 
     constructor(){
-
+        super();
+        this.loadCSS('ItineraryComponent.')
     }
 
     render(){
