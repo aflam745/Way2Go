@@ -176,6 +176,8 @@ export class ActivityFormComponent extends BaseComponent {
   #clearInputs() {
     this.#container.querySelector('form')?.reset();
     const chooseDaySelector = this.#container.querySelector('#choose-day');
+    const idHiddenElement = this.#container.querySelector('#id');
+    idHiddenElement.value = "";
     chooseDaySelector.style.display = "none";
   }
 
