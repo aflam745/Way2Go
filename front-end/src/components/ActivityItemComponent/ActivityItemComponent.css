@@ -1,0 +1,53 @@
+@import url("../../theme.css");
+/* ActivityComponent.css */
+
+/* Task Item Container */
+.activity-item {
+  display: grid;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--bg-white);
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-gray);
+  box-shadow: 0px 2px 4px var(--shadow);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+  grid-template: "title buttons" "details details";
+}
+
+/* Hover Effect for Task Items */
+.activity-item:hover {
+  background-color: var(--active-gray);
+  box-shadow: 0px 4px 8px var(--active-shadow);
+}
+
+/* Task List Item */
+#activityList li {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.deleteActivity {
+  background-color: var(--red);
+}
+
+.deleteActivity:hover {
+  background-color: var(--hover-red);
+}
+
+/* Task Details Styling */
+.activity-details {
+  flex: 1;
+  margin-right: 15px;
+  word-break: break-word;
+}
+
+.activity-item-details {
+  display: none;
+  padding-top: 10px;
+}

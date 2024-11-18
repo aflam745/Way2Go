@@ -14,9 +14,9 @@
 
 ## Owen Gibbons
 
-- [Fixed Typo in Users.md](https://github.com/aflam745/CS326Team36Project/commit/b7ce0dc325f47a8869d32964b6a46c588c16884a)
-- [Changed Application Name](https://github.com/aflam745/CS326Team36Project/commit/a1e19fe597da35875be0d7b347945ff6e4487d90)
-- [Updated owen-gibbons.md](https://github.com/aflam745/CS326Team36Project/commit/68412719da553258c55e3f9c5520e15c904243f0)
+- [Added Basic HTML and CSS](https://github.com/aflam745/CS326Team36Project/commit/38e0898a1c189ffbd973e54f17ddb306d9723107)
+- [Put in javascript structure, added form functionality](https://github.com/aflam745/CS326Team36Project/commit/adc4a5c7fcc9257f00f809705eca9d331a58c1cb)
+- [Added router functionality](https://github.com/aflam745/CS326Team36Project/commit/bbe60070a5a8e67065f6e84c2c9800d9dcdf4909)
 
 ## Emmanuel Kon
 
