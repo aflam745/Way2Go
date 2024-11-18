@@ -17,15 +17,16 @@ export class RouterComponent extends BaseComponent {
   /** @private */
   #attatchEventListeners() {
     // Re-render the correct state when the URL changes
-    addEventListener('popstate', () => this.render())
+    addEventListener('popstate', () => this.render(window.location))
   }
 
   /**
     * @public
     * Renders based on the URL's pathname
+    * @param {Location} url 
     */
-  render() {
-    const url = new URL(window.location)
+  render(url) {
+    //const url = new URL(window.location)
 
     const activityPage = new ActivityPageComponent()
 
@@ -37,6 +38,10 @@ export class RouterComponent extends BaseComponent {
       case '/':
         // TODO: Replace this with the actual root page
         this.conatiner.appendChild(activityPage.render())
+        break
+
+      case '/app':
+        this.conatiner.insertAdjacentHTML('afterbegin', '<button>hi</button>')
         break
 
       // Fallback should render the home page

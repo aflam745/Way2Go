@@ -3,6 +3,7 @@
   * for the router to properly re-render the page
   */
 export function navigate(path) {
-  const url = new URL(path)
-  window.history.pushState({}, "", url)
+  const url = new URL(path, window.location)
+  history.pushState({}, "", url)
+  history.go()
 }

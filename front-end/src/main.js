@@ -8,8 +8,4 @@ const app = document.getElementById('app');
 
 const router = new RouterComponent(app)
 
-router.render()
-
-// Services
-const itineraries = new ItineraryComponent();
-app.appendChild(itineraries.render());
+router.render(window.location)
