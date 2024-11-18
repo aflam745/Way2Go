@@ -10,7 +10,6 @@ export class ItineraryFormComponent extends BaseComponent {
 
   render() {
     this.#createContainer();
-    //this.#attachEventListeners();
     return this.#container;
   }
 

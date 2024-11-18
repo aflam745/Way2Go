@@ -10,3 +10,10 @@
     box-sizing: border-box;
     display: flex;
   }
+
+
+.itinerary-form h2 {
+  margin-top: 0;
+  font-size: 1.5rem;
+  text-align: center;
+}
