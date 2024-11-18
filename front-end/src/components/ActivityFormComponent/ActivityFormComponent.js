@@ -175,6 +175,8 @@ export class ActivityFormComponent extends BaseComponent {
   // Clears the form
   #clearInputs() {
     this.#container.querySelector('form')?.reset();
+    const chooseDaySelector = this.#container.querySelector('#choose-day');
+    chooseDaySelector.style.display = "none";
   }
 
   /*
