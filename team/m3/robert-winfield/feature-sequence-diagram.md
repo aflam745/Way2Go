@@ -1,6 +1,6 @@
 ## Itinerary Display Page Feature
 
-The feature I chose was the **Itinerary Display Page**.
+The feature I chose was the **Itinerary Display Page** with Emmanuel.
 
 - The page includes:
   - A map component to **visualize the itinerary**.
