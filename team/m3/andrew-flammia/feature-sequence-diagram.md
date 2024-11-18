@@ -10,8 +10,9 @@ The feature I chose was the **Activity Form Page**.
 
 - Each activity entered is stored in **IndexedDB** for persistent data storage.
 
-# Sequence Diagram
+### Sequence Diagram
 
+```mermaid
 sequenceDiagram
     participant User
     participant ActivityForm
@@ -35,3 +36,4 @@ sequenceDiagram
     User->>ActivityList: Press "Delete" on an activity
     ActivityList->>IndexedDB: Delete activity data
     ActivityList->>User: Display updated activity list without deleted activity
+```
