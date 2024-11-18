@@ -1,4 +1,4 @@
-import { BaseComponent } from "../BaseComponent/BaseComponent";
+import { BaseComponent } from "../BaseComponent/BaseComponent.js";
 
 export class MapComponent extends BaseComponent {
     #container = null;
@@ -16,6 +16,12 @@ export class MapComponent extends BaseComponent {
         return this.#container;
     }
 
+    removeSelf() {
+        this.map.off();
+        this.map.remove();
+        this.map = null;
+    }
+
     #createContainer() {
         this.#container = document.createElement('div');
         this.#container.style.height = '400px';
@@ -24,7 +30,6 @@ export class MapComponent extends BaseComponent {
     }
 
     #loadLeafletResources(callback) {
-        // Load Leaflet JS
         const mapScript = document.createElement('script');
         mapScript.src = "https://unpkg.com/leaflet/dist/leaflet.js";
         mapScript.onload = callback.bind(this);
@@ -37,7 +42,7 @@ export class MapComponent extends BaseComponent {
         document.head.appendChild(mapStyles);
     }
 
-    #initializeMap() {
+    #initializeMap() {      
         this.map = L.map(this.#container.id);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors',
@@ -81,6 +86,6 @@ export class MapComponent extends BaseComponent {
             this.map.fitBounds(group.getBounds());
         }
 
-        if (polyline) L.geoJSON(this.polyline).addTo(this.map);
+        if (this.polyline) L.geoJSON(this.polyline).addTo(this.map);
     }
 }
