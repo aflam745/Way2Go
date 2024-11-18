@@ -53,9 +53,14 @@ export class ItineraryComponent extends BaseComponent {
     newTile.classList.add("tile");
     newTile.textContent = title;
 
-    // Link the tile to another page (replace "details.html" with your desired page)
+    // Add navigation functionality to the tile
     newTile.onclick = () => {
-      window.location.href = `details.html?title=${encodeURIComponent(title)}`;
+      // Update the URL without reloading the page
+      const pageURL = `/activity/${encodeURIComponent(title)}`;
+      history.pushState({}, "", pageURL);
+
+      // Let the RouterComponent handle rendering the new page
+      dispatchEvent(new PopStateEvent("popstate"));
     };
 
     // Append the new tile to the container
