@@ -88,4 +88,3 @@ export class MapComponent extends BaseComponent {
 
         if (this.polyline) L.geoJSON(this.polyline).addTo(this.map);
     }
-}
