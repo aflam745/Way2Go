@@ -6,6 +6,3 @@ const app = document.getElementById('app');
 const router = new RouterComponent(app)
 
 router.render(window.location)
-
-// Services
-const taskRepository = new DirectionsComponent();
