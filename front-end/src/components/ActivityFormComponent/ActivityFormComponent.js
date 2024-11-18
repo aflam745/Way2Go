@@ -115,6 +115,7 @@ export class ActivityFormComponent extends BaseComponent {
     * @param {FormData} formData  - Data from the form in formData format
     */
   #handleAddActivity2(formData) {
+    console.log(Object.fromEntries(formData));
     if(Object.fromEntries(formData).id.length > 0){
       this.#publishEditActivity(Object.fromEntries(formData));
       this.#changeSubmitText();
@@ -175,6 +176,8 @@ export class ActivityFormComponent extends BaseComponent {
   #clearInputs() {
     this.#container.querySelector('form')?.reset();
     const chooseDaySelector = this.#container.querySelector('#choose-day');
+    const idHiddenElement = this.#container.querySelector('#id');
+    idHiddenElement.value = "";
     chooseDaySelector.style.display = "none";
   }
 

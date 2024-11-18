@@ -1,0 +1,75 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: #f5f5f5;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* Full viewport height */
+}
+
+header {
+    text-align: center;
+    padding: 20px;
+    background-color: #ffffff;
+    color: rgb(0, 0, 0);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 tiles per row */
+    grid-template-rows: 1fr 1fr; /* 2 rows of tiles */
+    gap: 30px; /* Adds space between tiles horizontally and vertically */
+    width: 90%; /* Slightly reduce the overall grid width */
+    max-width: 1100px; /* Limit max width on larger screens */
+    margin: auto; /* Center the grid */
+    height: calc(100vh - 100px); /* Account for header height and prevent scrolling */
+    justify-content: center;
+    align-items: center;
+}
+
+.tile {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.2s;
+    cursor: pointer;
+    color: #333;
+    text-decoration: none;
+    aspect-ratio: 1; /* Ensures tiles remain square */
+}
+
+.tile:hover {
+    transform: scale(1.05);
+}
+
+.plus-tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
+    font-weight: bold;
+    color: #333;
+}
+
+.title {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.bullets {
+    text-align: left;
+    list-style-type: disc;
+    padding-left: 20px;
+}
