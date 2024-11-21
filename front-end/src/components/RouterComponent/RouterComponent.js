@@ -1,6 +1,8 @@
 import { ActivityPageComponent } from "../ActivityPageComponent/ActivityPageComponent.js";
 import { BaseComponent } from "../BaseComponent/BaseComponent.js";
 
+// TODO: String manipulation for URL?
+
 /**
   * Router Component binds to a rootContainer and Renders
   * pages based on the URL state that is provided to it
