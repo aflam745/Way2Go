@@ -6,6 +6,10 @@ import { RouterComponent } from "./components/RouterComponent/RouterComponent.js
 
 const app = document.getElementById('app');
 
-const router = new RouterComponent(app)
+const routes = new Map([
+  ['/', new ActivityPageComponent()]
+])
+
+const router = new RouterComponent(app, routes)
 
 router.render(window.location)

@@ -7,10 +7,22 @@ import { BaseComponent } from "../BaseComponent/BaseComponent.js";
   */
 export class RouterComponent extends BaseComponent {
   /** @param {HTMLElement} rootContainer - Root conatiner */
-  constructor(rootContainer) {
+  /** @param {Map<string, BaseComponent>} routes  */
+  constructor(rootContainer, routes) {
     super()
-    /** @private */
+    /** 
+      * @type {Element}
+      * @private 
+      */
     this.conatiner = rootContainer
+
+    /** @type {Map<string, BaseComponent>} */
+    this.routes = routes
+
+    if (!this.routes.has('/')) {
+      throw Error("Must contain a route with pattern '/'")
+    }
+
     this.#attatchEventListeners() // I will deal with cleaning this up later
   }
 
@@ -23,32 +35,19 @@ export class RouterComponent extends BaseComponent {
   /**
     * @public
     * Renders based on the URL's pathname
-    * @param {Location} url 
+    * @param {Location | URL} url 
     */
   render(url) {
-    //const url = new URL(window.location)
-
-    const activityPage = new ActivityPageComponent()
-
     // Before rendering the new page the old page needs to be cleared
-    this.conatiner.replaceChildren()
+    // this.conatiner.replaceChildren()
 
     // Match based on Regex?
-    switch (url.pathname) {
-      case '/':
-        // TODO: Replace this with the actual root page
-        this.conatiner.appendChild(activityPage.render())
-        break
+    /** @type {BaseComponent} */
+    const component = this.routes.get(url.pathname) ?? this.routes.get('/')
 
-      case '/app':
-        this.conatiner.insertAdjacentHTML('afterbegin', '<button>hi</button>')
-        break
-
-      // Fallback should render the home page
-      default:
-        this.conatiner.appendChild(activityPage.render())
-        break
-    }
+    this.conatiner.replaceChildren(
+      component.render()
+    )
   }
 
 }
