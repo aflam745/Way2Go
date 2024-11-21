@@ -34,6 +34,9 @@ export class ActivityItemDetailsComponent extends BaseComponent {
                 <strong>Address:</strong> <span id="displayAddress"></span>
             </div>
             <div class="activity-item-data">
+                <strong>Activity type:</strong> <span id="displayActivityType"></span>
+            </div>
+            <div class="activity-item-data">
                 <strong>Duration:</strong> <span id="displayDuration"></span>
             </div>
             <div class="activity-item-data">
@@ -56,5 +59,6 @@ export class ActivityItemDetailsComponent extends BaseComponent {
         this.#container.querySelector('#displayOpenTime').textContent = this.activityData.openTime;
         this.#container.querySelector('#displayCloseTime').textContent = this.activityData.closeTime;
         this.#container.querySelector('#displayNotes').textContent = this.activityData.notes;
+        this.#container.querySelector('#displayActivityType').textContent = this.activityData.activityType;
     }
 }

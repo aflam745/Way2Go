@@ -35,7 +35,8 @@ export class ActivityListComponent extends BaseComponent {
     this.#container.innerHTML = `
       <div>
         <h2>Activity List</h2>
-        <button id="generateItinerary">Generate Itinerary</button>
+        <button id="generateItinerary">Generate itinerary</button>
+        <button id="clearList">Clear list</button>
       </div>
       <ul id="activityList"></ul>
     `;
@@ -46,7 +47,13 @@ export class ActivityListComponent extends BaseComponent {
     const hub = EventHub.getInstance();
 
     hub.subscribe(Events.NewActivity, activityData => this.#addActivityToList(activityData));
-    hub.subscribe(Events.SubmitEditActivity, activityData => this.#editActivityInList(activityData))
+    hub.subscribe(Events.SubmitEditActivity, activityData => this.#editActivityInList(activityData));
+
+    const clearListButton = this.#container.querySelector("#clearList");
+
+    clearListButton.addEventListener('click', (e) => {
+      this.#clearActivityList();
+    })
   }
 
   #addActivityToList(activityData) {
@@ -54,6 +61,27 @@ export class ActivityListComponent extends BaseComponent {
 
     const activity = new ActivityItemComponent(activityData);
     activityList.appendChild(activity.render());
+  }
+
+  #clearActivityList(){
+    const activityUlElement = this.#container.querySelector('#activityList');
+    const allActivities = activityUlElement.children;
+
+    const length = allActivities.length;
+
+    for(let i = 0; i < length; ++i){
+      const activity = allActivities[0];
+      const activityId = activity.id.replace('activityItem_', '');
+
+      this.#activityDB.deleteActivity(activityId)
+        .then((message) => {
+          console.log(message);
+        })
+        .catch((error) => {
+          console.error("Failed to delete activity from ActivityDB:", error);
+        });
+      activity.remove();
+    }
   }
 
   #editActivityInList(activityData){
@@ -87,7 +115,7 @@ export class ActivityListComponent extends BaseComponent {
         this.#addActivityToList(activityData);
       });
     } catch (error) {
-      console.log('Failed to fetch activities from ActivityDD:', error);
+      console.log('Failed to fetch activities from ActivityDB:', error);
     }
   }
 

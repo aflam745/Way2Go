@@ -58,6 +58,15 @@ export class ActivityFormComponent extends BaseComponent {
         <input type="text" id="address" name="address" required>
         <br>
 
+        <label for="activity-type">Type of activity:</label>
+        <select id="activity-type" name="activityType">
+          <option value="Activity">Activity</option>
+          <option value="Breakfast">Breakfast</option>
+          <option value="Lunch">Lunch</option>
+          <option value="Dinner">Dinner</option>
+        </select>
+        <br>
+
         <label for="duration">Duration:</label>
         <input type="time" id="duration" name="duration" class="time-input" required>
         <br>
@@ -118,7 +127,7 @@ export class ActivityFormComponent extends BaseComponent {
     console.log(Object.fromEntries(formData));
     if(Object.fromEntries(formData).id.length > 0){
       this.#publishEditActivity(Object.fromEntries(formData));
-      this.#changeSubmitText();
+      this.#changeSubmitTextToAdd();
     } else {
       const currentTime = new Date().toLocaleTimeString();
       const randThreeDigitInt = (Math.floor((Math.random() * 900) + 100)).toString();
@@ -197,12 +206,18 @@ export class ActivityFormComponent extends BaseComponent {
       }
     }
 
-    this.#changeSubmitText();
+    this.#changeSubmitTextToEdit();
   }
 
-  #changeSubmitText(){
+  #changeSubmitTextToEdit(){
     const submitButton = this.#container.querySelector('#add-activity');
 
-    submitButton.innerText = (submitButton.innerText === "Edit Activity") ? "Add Activity" : "Edit Activity";
+    submitButton.innerText = "Edit Activity";
+  }
+
+  #changeSubmitTextToAdd(){
+    const submitButton = this.#container.querySelector('#add-activity');
+
+    submitButton.innerText = "Add Activity";
   }
 }
