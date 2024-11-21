@@ -1,4 +1,4 @@
-import Activity from "./Activity";
+import Activity from "./Activity.js";
 
 export default class Itinerary {
     constructor(id, tripName, startDate, endDate, startLocation, endLocation, transportation, description, image) {

@@ -18,24 +18,27 @@ export class ItineraryComponent extends BaseComponent {
     );
 
     #loadMap() {
-        
+        console.log("Hello")
         const filteredActivities = this.#filterByDay();
-        const polyline = null; 
+        const polyline = null;
 
-        const mapContainer = document.getElementById('mapContainer');
-
+        // Remove existing map container and map instance
+        const mapContainer = this.#container.querySelector('#mapContainer');
+        console.log(mapContainer);
         if (mapContainer) {
-            console.log("This is the map container, ", mapContainer);
-            mapContainer.remove();
+            mapContainer.removeChild(this.#container.querySelector("#map"));
             if (this.map) {
-                this.map.removeSelf(); 
-                this.map = null; 
+                this.map.removeSelf();
+                this.map = null;
             }
         }
 
+        // Create a new map container
         const newMapContainer = document.createElement('div');
         newMapContainer.id = 'mapContainer';
+        this.#container.appendChild(newMapContainer); // Append to DOM first
 
+        // Initialize the map
         if (!this.map) {
             this.map = new MapComponent(filteredActivities, polyline);
         } else {
@@ -43,11 +46,8 @@ export class ItineraryComponent extends BaseComponent {
             this.map.polyline = polyline;
         }
 
+        // Render the map only after it's in the DOM
         newMapContainer.appendChild(this.map.render());
-
-
-        this.#container.appendChild(newMapContainer);
-
     }
 
 
@@ -139,6 +139,7 @@ export class ItineraryComponent extends BaseComponent {
     }
 
     render() {
+        console.log("hereeee")
         this.#createContainer();
         this.#createHeader();
         this.#loadMap();

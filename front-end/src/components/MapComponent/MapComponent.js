@@ -43,7 +43,7 @@ export class MapComponent extends BaseComponent {
     }
 
     #initializeMap() {      
-        this.map = L.map(this.#container.id);
+        this.map = L.map(this.#container);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors',
         }).addTo(this.map);
