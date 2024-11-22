@@ -1,16 +1,35 @@
-import { ActivityPageComponent } from "../ActivityPageComponent/ActivityPageComponent.js";
 import { BaseComponent } from "../BaseComponent/BaseComponent.js";
+
+// TODO: String manipulation for URL?
 
 /**
   * Router Component binds to a rootContainer and Renders
-  * pages based on the URL state that is provided to it
+  * pages based on the URL state that is provided to it.
+  * The router is static so router parameters do not work.
   */
 export class RouterComponent extends BaseComponent {
-  /** @param {HTMLElement} rootContainer - Root conatiner */
-  constructor(rootContainer) {
+  /** 
+    * @param {HTMLElement} rootContainer - Root conatiner 
+    * @param {Map<string, BaseComponent>} routes
+    * @param {BaseComponent?} layout
+    */
+  constructor(rootContainer, routes, layout = null) {
     super()
-    /** @private */
+    /** 
+      * @type {Element}
+      * @private 
+      */
     this.conatiner = rootContainer
+
+    /** @type {Map<string, BaseComponent>} */
+    this.routes = routes
+
+    this.layout = layout
+
+    if (!this.routes.has('/')) {
+      throw Error("Must contain a route with pattern '/'")
+    }
+
     this.#attatchEventListeners() // I will deal with cleaning this up later
   }
 
@@ -23,32 +42,27 @@ export class RouterComponent extends BaseComponent {
   /**
     * @public
     * Renders based on the URL's pathname
-    * @param {Location} url 
+    * @param {Location | URL} url 
     */
   render(url) {
-    //const url = new URL(window.location)
-
-    const activityPage = new ActivityPageComponent()
-
-    // Before rendering the new page the old page needs to be cleared
-    this.conatiner.replaceChildren()
-
     // Match based on Regex?
-    switch (url.pathname) {
-      case '/':
-        // TODO: Replace this with the actual root page
-        this.conatiner.appendChild(activityPage.render())
-        break
 
-      case '/app':
-        this.conatiner.insertAdjacentHTML('afterbegin', '<button>hi</button>')
-        break
+    /** @type {BaseComponent} */
+    const component = this.routes.get(url.pathname) ?? this.routes.get('/')
 
-      // Fallback should render the home page
-      default:
-        this.conatiner.appendChild(activityPage.render())
-        break
+
+    if (this.layout != null) {
+      this.conatiner.replaceChildren(
+        this.layout.render(
+          component.render()
+        )
+      )
+    } else {
+      this.conatiner.replaceChildren(
+        component.render()
+      )
     }
-  }
 
+    return this.conatiner
+  }
 }
