@@ -31,7 +31,7 @@ export function getQueryParams(url) {
   */
 export function serializeQueryParams(obj) {
   const out = new URLSearchParams()
-  for (let [key, value] of Object.fromEntries(obj)) {
+  for (let [key, value] of Object.entries(obj)) {
     out.append(key, value)
   }
   return out
