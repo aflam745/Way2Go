@@ -1,13 +1,13 @@
 import { BaseComponent } from "../BaseComponent/BaseComponent.js";
-import { ItineraryFormComponent } from "./ItineraryFormComponent.js";
+import { ItineraryFormComponent } from "../ItineraryFormComponent/ItineraryFormComponent.js";
 
-export class ItineraryComponent extends BaseComponent {
+export class HomePageComponent extends BaseComponent {
   #container = null;
   #formComponent = null;
 
   constructor() {
     super();
-    this.loadCSS("ItineraryComponent");
+    this.loadCSS("HomePageComponent");
     this.#formComponent = new ItineraryFormComponent();
   }
 
