@@ -1,4 +1,4 @@
- /**
+/**
   * Navigates to the URL triggering a popstate event 
   * for the router to properly re-render the page
   *
@@ -13,10 +13,10 @@ export function navigate(path) {
 
 /**
   * Takes the query params from a URL and transforms them 
-  * into 
+  * into a Javascript Object
   *
   * @param {URL | Location} url 
-  * @returns {any}
+  * @returns {Object}
   */
 export function getQueryParams(url) {
   const searchParams = new URLSearchParams(url.search)
@@ -24,6 +24,22 @@ export function getQueryParams(url) {
 }
 
 /**
+  * Serializes a Javascript Object as URLSearchParams
+  *
+  * @param {Object} obj
+  * @returns {URLSearchParams}
+  */
+export function serializeQueryParams(obj) {
+  const out = new URLSearchParams()
+  for (let [key, value] of Object.fromEntries(obj)) {
+    out.append(key, value)
+  }
+  return out
+}
+
+/**
+  * Constructs a URL from a path and URLSearchParams
+  *
   * @param {string} path 
   * @param {string | URLSearchParams} params 
   */
