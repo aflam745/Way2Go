@@ -1,7 +1,8 @@
 import { BaseComponent } from "../BaseComponent/BaseComponent.js";
-import { MapComponent } from "../MapComponent/MapComponent.js";
+import ItineraryHeaderComponent from "../ItineraryHeaderComponent/ItineraryHeaderComponent.js";
+import { MapComponent } from "../ItineraryMapComponent/ItineraryMapComponent.js";
 
-export class ItineraryComponent extends BaseComponent {
+export class ItineraryDetailsComponent extends BaseComponent {
     /** @type {HTMLDivElement | null} */
     #container = null;
     #dropdown = null;
@@ -13,30 +14,23 @@ export class ItineraryComponent extends BaseComponent {
         this.selectedDay = 1;
     }
 
-    #filterByDay = () => this.itinerary.activities.values().filter(
+    #filterByDay = () => Array.from(this.itinerary.activities.values()).filter(
         (activity) => activity.day.includes(this.selectedDay) // can straddle midnight
     );
 
     #loadMap() {
-        console.log("Hello")
         const filteredActivities = this.#filterByDay();
         const polyline = null;
 
-        // Remove existing map container and map instance
-        const mapContainer = this.#container.querySelector('#mapContainer');
-        console.log(mapContainer);
-        if (mapContainer) {
+        let mapContainer = this.#container.querySelector('#mapContainer');
+        if (!mapContainer) {
+            mapContainer = document.createElement('div');
+            mapContainer.id = 'mapContainer';
+            this.#container.appendChild(mapContainer);
+        } else {
             mapContainer.removeChild(this.#container.querySelector("#map"));
-            if (this.map) {
-                this.map.removeSelf();
-                this.map = null;
-            }
+            if (this.map) this.map.removeSelf();
         }
-
-        // Create a new map container
-        const newMapContainer = document.createElement('div');
-        newMapContainer.id = 'mapContainer';
-        this.#container.appendChild(newMapContainer); // Append to DOM first
 
         // Initialize the map
         if (!this.map) {
@@ -46,8 +40,7 @@ export class ItineraryComponent extends BaseComponent {
             this.map.polyline = polyline;
         }
 
-        // Render the map only after it's in the DOM
-        newMapContainer.appendChild(this.map.render());
+        mapContainer.appendChild(this.map.render());
     }
 
 
@@ -58,9 +51,8 @@ export class ItineraryComponent extends BaseComponent {
     }
 
     #createHeader() {
-        const header = document.createElement('h1');
-        header.textContent = this.itinerary.tripName;
-        this.#container.prepend(header);
+        const header = new ItineraryHeaderComponent();
+        this.#container.append(header.render());
     }
 
     #createDropdown() {
@@ -69,10 +61,9 @@ export class ItineraryComponent extends BaseComponent {
 
         const days = [
             ...new Set(
-                // Flatten the array of days for each activity
                 this.itinerary.activities.values()
                     .flatMap((activity) => {
-                        return activity.day.flat()})  // Flattening each activity's 'day' array
+                        return activity.day.flat()})
             )
         ].sort();
         days.forEach((day) => {
@@ -85,7 +76,7 @@ export class ItineraryComponent extends BaseComponent {
 
         this.#dropdown.addEventListener('change', (event) => {
             this.selectedDay = parseInt(event.target.value);
-            this.render();
+            this.renderNewDay();
         });
 
         const dropdownContainer = document.createElement('div');
@@ -95,8 +86,14 @@ export class ItineraryComponent extends BaseComponent {
         this.#container.appendChild(dropdownContainer);
     }
 
-    #createDisplay() {
+    #loadActivities() {
         const activitiesForDay = this.#filterByDay();
+
+        // Ensure previous content is cleared
+        const existingList = this.#container.querySelector('.activities-list');
+        if (existingList) {
+            existingList.remove();
+        }
 
         const activitiesListContainer = document.createElement('div');
         activitiesListContainer.classList.add('activities-list');
@@ -109,28 +106,27 @@ export class ItineraryComponent extends BaseComponent {
             activitiesForDay.forEach((activity, index) => {
                 const activityDiv = document.createElement('div');
                 activityDiv.classList.add('activity-item');
-    
+
                 const activityNumber = document.createElement('span');
                 activityNumber.classList.add('activity-number');
                 activityNumber.textContent = `${index + 1}. `;
-    
+
                 const activityName = document.createElement('h3');
                 activityName.classList.add('activity-name');
                 activityName.textContent = activity.name;
 
                 const activityDetails = document.createElement('div');
                 activityDetails.innerHTML = `
-                    <p>Address: ${activity.location.address}</p>
-                    <p>Duration: ${activity.duration}</p>
-                    <p>Arrival time: ${activity.startTime}</p>
-                    <p>Departure time: ${activity.endTime}</p>
-                    <p>Description: ${activity.description}</p>
-                `
-                
+                <p>Address: ${activity.location.address}</p>
+                <p>Duration: ${activity.duration}</p>
+                <p>Arrival time: ${activity.startTime}</p>
+                <p>Departure time: ${activity.endTime}</p>
+                <p>Description: ${activity.description}</p>
+            `;
+
                 activityDiv.appendChild(activityNumber);
                 activityDiv.appendChild(activityName);
                 activityDiv.appendChild(activityDetails);
-    
                 activitiesListContainer.appendChild(activityDiv);
             });
         }
@@ -138,13 +134,21 @@ export class ItineraryComponent extends BaseComponent {
         this.#container.appendChild(activitiesListContainer);
     }
 
-    render() {
-        console.log("hereeee")
-        this.#createContainer();
-        this.#createHeader();
+    renderNewDay() {
         this.#loadMap();
-        this.#createDropdown();
-        this.#createDisplay();
+        this.#loadActivities();
+    }
+
+    render() {
+        if (!this.#container) {
+            this.#createContainer();
+            this.#createHeader();
+            this.#createDropdown();
+            document.body.appendChild(this.#container);
+        }
+
+        this.#loadMap();
+        this.#loadActivities();
         return this.#container;
     }
 }

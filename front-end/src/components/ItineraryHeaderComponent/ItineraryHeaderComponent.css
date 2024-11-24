@@ -1,0 +1,25 @@
+.itinerary-header-component {
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin: 20px;
+    border-radius: 10px;
+    background-color: #f3f3f3;
+    position: relative;
+    font-family: 'Trebuchet MS', sans-serif;
+}
+
+.itinerary-image {
+    max-width: 150px;
+    max-height: 150px;
+    object-fit: contain;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    border-radius: 10px;
+}
+
+h1,
+h3,
+p {
+    margin: 5px 0;
+}
