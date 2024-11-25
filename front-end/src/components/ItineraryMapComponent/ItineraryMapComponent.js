@@ -20,6 +20,7 @@ export class MapComponent extends BaseComponent {
         this.map.off();
         this.map.remove();
         this.map = null;
+        this.geometry = null;
     }
 
     #createContainer() {
@@ -57,7 +58,7 @@ export class MapComponent extends BaseComponent {
             const originalTooltipText = `${index + 1}. ${activity.name}`;
 
             // marker images stored locally to avoid marker render issue
-            var icon = L.icon({
+            const icon = L.icon({
                 iconUrl: '/components/ItineraryMapComponent/images/marker-icon.png',
                 shadowUrl: '/components/ItineraryMapComponent/images/marker-shadow.png',
 
@@ -107,12 +108,11 @@ export class MapComponent extends BaseComponent {
 
         // add line to map if geometry is given
         if (this.geometry) {
-            const decodedCoordinates = polyline.decode(this.geometry);
             const geojson = {
                 "type": "Feature",
                 "geometry": {
                     "type": "LineString",
-                    "coordinates": decodedCoordinates.map(coord => [coord[1], coord[0]]) // Reverse to [longitude, latitude] as required by GeoJSON
+                    "coordinates": this.geometry
                 }
                 
             };

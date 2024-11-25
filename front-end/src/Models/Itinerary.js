@@ -1,6 +1,6 @@
 import Activity from "./Activity.js";
 import { EventHub } from "../eventhub/EventHub.js"
-import { Events } from "../eventhub/Event.js"
+import { Events } from "../eventhub/Events.js"
 import { convertDateToUnixTimestamp } from "../utils/TimeConversions.js";
 
 export default class Itinerary {
@@ -159,6 +159,36 @@ export default class Itinerary {
         );
     }
 
+    #getTransportationType = transportation => {
+        switch (transportation) {
+            case "Walking":
+                return "foot-walking";
+            case "Driving":
+                return "driving-road";
+            case "Biking":
+                return "cycling-road";
+            default:
+                throw new Error("Invalid transportation type: ", transportation);
+        }
+    }
+
+    async getDirections(transportation, activities) {
+        const req = {
+            transportation: this.#getTransportationType(transportation),
+            coordinates: activities.map(activity => [activity.location.lon, activity.location.lat])
+        }
+
+        const res = await fetch('http://localhost:4000/getDirections', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(req)
+        });
+
+        return await res.json();
+    }
+
     async optimizeRoute() {
 
         // filter out any activities that have been deleted and then get the raw activity
@@ -170,22 +200,9 @@ export default class Itinerary {
         tripStartTime = convertDateToUnixTimestamp(this.startDate);
         tripEndTime = convertDateToUnixTimestamp(this.endDate);
 
-        const getTransportationType = transportation => {
-            switch (transportation) {
-                case "Walking":
-                    return "foot-walking";
-                case "Driving":
-                    return "driving-road";
-                case "Biking":
-                    return "cycling-road";
-                default:
-                    throw new Error("Invalid transportation type: ", transportation);
-            }
-        }
-
         const vehicle = {
             id: 1,
-            profile: getTransportationType(this.transportation),
+            profile: this.#getTransportationType(this.transportation),
             start: [tripStartLocation.lon, tripStartLocation.lat],
             end: [tripEndLocation.lon, tripEndLocation.lat],
             time_window: [tripStartTime, tripEndTime]
@@ -218,8 +235,11 @@ export default class Itinerary {
             }
         }
 
-        const response = await fetch('/optimization', {
+        const response = await fetch('http://localhost:4000/optimize', {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify(req)
         });
 

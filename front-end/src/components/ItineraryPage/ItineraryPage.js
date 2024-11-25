@@ -2,7 +2,7 @@ import { BaseComponent } from "../BaseComponent/BaseComponent.js";
 import ItineraryHeaderComponent from "../ItineraryHeaderComponent/ItineraryHeaderComponent.js";
 import { MapComponent } from "../ItineraryMapComponent/ItineraryMapComponent.js";
 import { EventHub } from "../../eventhub/EventHub.js";
-import { Events } from "../../eventhub/Event.js";
+import { Events } from "../../eventhub/Events.js";
 
 export default class ItineraryPage extends BaseComponent {
     #container = null;
