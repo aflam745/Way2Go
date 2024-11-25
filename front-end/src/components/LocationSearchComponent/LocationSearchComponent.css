@@ -1,0 +1,35 @@
+/* The container <div> - needed to position the dropdown content */
+.location-search-component {
+    position: relative;
+    display: inline-block;
+    z-index: 100;
+}
+
+.search-input {
+    width: 300px;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.search-results {
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+    max-height: 500px;
+    max-width: 500px;
+    width: auto;
+    overflow-y: auto;
+}
+
+.search-results a {
+    color: black;
+    padding: 12px 16px;
+    display: block;
+    z-index: 100;
+}
+
+.search-results a:hover {
+    background-color: #ddd;
+}
