@@ -194,6 +194,8 @@ export default class Itinerary {
         // filter out any activities that have been deleted and then get the raw activity
         const activitiesToOptimize = Array.from(this.stagedActivities.values()).filter(a => a.change !== 'Deleted').map(a => a.activity);
 
+        if (activitiesToOptimize.length >= 50) throw new Error("Too many activities!");
+
         tripStartLocation = this.startLocation;
         tripEndLocation = this.endLocation;
 
@@ -244,6 +246,10 @@ export default class Itinerary {
         });
 
         const data = await response.json();
+
+        if (data["unassigned"] && data["unassigned"].length > 0) {
+            throw new Error("Unable to optimize your itinerary. Try removing activities or adjusting their timings.")
+        } 
 
         const getActivityById = id => this.stagedActivities.get(id);
 

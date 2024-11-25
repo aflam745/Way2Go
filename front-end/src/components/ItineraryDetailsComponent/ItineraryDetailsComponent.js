@@ -18,9 +18,15 @@ export class ItineraryDetailsComponent extends BaseComponent {
         (activity) => activity.day.includes(this.selectedDay) // can straddle midnight
     );
 
-    #loadMap() {
+    async #loadMap() {
         const filteredActivities = this.#filterByDay();
-        const polyline = null;
+
+        let geometry = null;
+        if (filteredActivities.length > 1) {
+            // get geometry for line on map
+            const data = await this.itinerary.getDirections(this.itinerary.transportation, filteredActivities);
+            geometry = data.data.features[0].geometry.coordinates;
+        }
 
         let mapContainer = this.#container.querySelector('#mapContainer');
         if (!mapContainer) {
@@ -34,10 +40,10 @@ export class ItineraryDetailsComponent extends BaseComponent {
 
         // Initialize the map
         if (!this.map) {
-            this.map = new MapComponent(filteredActivities, polyline);
+            this.map = new MapComponent(filteredActivities, geometry);
         } else {
             this.map.activities = filteredActivities;
-            this.map.polyline = polyline;
+            this.map.geometry = geometry;
         }
 
         mapContainer.appendChild(this.map.render());
