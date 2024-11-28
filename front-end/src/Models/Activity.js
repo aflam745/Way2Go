@@ -11,15 +11,33 @@ export default class Activity {
         startTime,
         finishTime
     } = {}) {
+
+        /** @type {number} */
         this.id = id;
+
+        /** @type {boolean} */
         this.isHotelStay = isHotelStay;
+
+        /** @type {string} */
         this.name = name;
+
         this.location = location;
+
+        /** @type {string} */
         this.duration = duration;
+
         this.timeframes = timeframes;
+
+        /** @type {Date} */
         this.day = day;
+
+        /** @type {string} */
         this.notes = notes;
+
+        /** @type {Date} */
         this.startTime = startTime;
+
+        /** @type {Date} */
         this.finishTime = finishTime;
     }
 
