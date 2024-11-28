@@ -19,6 +19,15 @@ class DBWrapper {
     /** @type {sqlite3.Database}*/
     this.db = new sqlite3('records.db')
 
+    // Loop through all files in migrations and apply them
+    const res = fs.readdirSync('back-end/migrations/', { withFileTypes: true })
+
+    for (let i = 1; i <= res.length; ++i) {
+      const file = fs.readFileSync(`${i}.sql`, 'utf8')
+      this.db.exec(file)
+    }
+
+
     this.saveItineraryStatement = this.db.prepare(`
       INSERT INTO itinerary (id, data) 
         values(?, jsonb(?));
