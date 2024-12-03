@@ -3,6 +3,7 @@ import { Events } from '../../eventhub/Events.js';
 import { BaseComponent } from '../BaseComponent/BaseComponent.js';
 import { ActivityItemComponent } from '../ActivityItemComponent/ActivityItemComponent.js';
 import { ActivityDatabase } from '../../Models/ActivityDatabase.js';
+import { navigate } from '../../lib/router.js';
 
 export class ActivityListComponent extends BaseComponent {
   #container = null; // Private variable to store the container element
@@ -50,10 +51,15 @@ export class ActivityListComponent extends BaseComponent {
     hub.subscribe(Events.SubmitEditActivity, activityData => this.#editActivityInList(activityData));
 
     const clearListButton = this.#container.querySelector("#clearList");
+    const generateItineraryButton = this.#container.querySelector("#generateItinerary");
 
     clearListButton.addEventListener('click', (e) => {
       this.#clearActivityList();
-    })
+    });
+
+    generateItineraryButton.addEventListener('click', (e) => {
+      navigate('/itinerary');
+    });
   }
 
   #addActivityToList(activityData) {

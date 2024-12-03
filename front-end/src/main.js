@@ -13,7 +13,4 @@ const routes = new Map([
 
 const router = new RouterComponent(app, routes)
 
-
-const homePageComponent = new HomePageComponent();
-
 router.render(window.location);
