@@ -8,7 +8,7 @@ export default class ItineraryPage extends BaseComponent {
     #container = null;
     #selectedDay = 1;
     constructor() {
-
+        super();
     }
 
     #initContainer() {
@@ -19,18 +19,18 @@ export default class ItineraryPage extends BaseComponent {
 
     #loadHeader() {
         const itineraryHeaderComponent = new ItineraryHeaderComponent();
-        this.#container.appendChild(itineraryHeaderComponent);
+        this.#container.appendChild(itineraryHeaderComponent.render());
     }
 
     #loadMap() {
         const mapComponent = new MapComponent();
-        this.#container.appendChild(mapComponent);
+        this.#container.appendChild(mapComponent.render());
     }
 
-    #loadActivityList() {
-        const activityListComponent = new ItineraryActivityListComponent();
-        this.#container.appendChild(activityListComponent);
-    }
+    // #loadActivityList() {
+    //     const activityListComponent = new ItineraryActivityListComponent();
+    //     this.#container.appendChild(activityListComponent);
+    // }
 
     #attachEventListeners() {
         EventHub.getInstance().subscribe(Events.ChangeDay, day => this.#changeDay(day))
@@ -45,7 +45,7 @@ export default class ItineraryPage extends BaseComponent {
         this.#attachEventListeners();
         this.#loadHeader();
         this.#loadMap();
-        this.#loadActivityList();
+        // this.#loadActivityList();
         return this.#container;
     }
 }
