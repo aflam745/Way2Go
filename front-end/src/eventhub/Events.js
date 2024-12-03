@@ -6,5 +6,6 @@ export const Events = {
     EditActivity: 'EditActivity',
     SubmitEditActivity: 'SubmitEditActivity',
     StoreActivity: 'StoreActivity',
-    LocationSelect: 'LocationSelect'
+    LocationSelect: 'LocationSelect',
+    ChangeDay: 'ChangeDay'
 };

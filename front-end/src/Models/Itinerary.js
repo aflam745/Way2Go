@@ -1,6 +1,10 @@
-import Activity from "./Activity";
+import Activity from "./Activity.js";
+import { EventHub } from "../eventhub/EventHub.js"
+import { Events } from "../eventhub/Events.js"
+import { convertDateToUnixTimestamp } from "../utils/TimeConversions.js";
 
 export default class Itinerary {
+    static #instance = null;
     constructor(id, tripName, startDate, endDate, startLocation, endLocation, transportation, description, image) {
         this.id = id;
         this.tripName = tripName;
@@ -20,23 +24,28 @@ export default class Itinerary {
         this.subscribeToEvents();
     }
 
+    /** @return {Itinerary | null} */
+    static getInstance() {
+        return Itinerary.#instance;
+    }
+
     subscribeToEvents() {
         const hub = EventHub.getInstance();
 
         hub.subscribe(Events.NewActivity, activityData => {
-            this.addActivity(activityData);
-            this.reloadMap();
+            this.addActivity(...activityData);
         });
 
         hub.subscribe(Events.DeleteActivity, activityId => {
             this.deleteActivity(activityId);
-            this.reloadMap()
         });
 
         hub.subscribe(Events.EditActivity, activityData => {
-            this.updateActivity(activityData.id, activityData);
+            this.updateActivity(activityData.id, ...activityData);
         });
     }
+
+
 
     /**
      * Creates a new itinerary from scratch and adds the itinerary to the DB.
@@ -49,9 +58,9 @@ export default class Itinerary {
      * @param {*} image optional image to display with the trip
      * @returns an Itinerary instance
      */
-    static async createNewItinerary(tripName, startDate, endDate, startLocation, endLocation, transportation, description, image) {
-        const id = Date.now() + Math.floor(Math.random() * 1000)
-        await fetch("/createItinerary", {
+    static async createNewItinerary(id, tripName, startDate, endDate, startLocation, endLocation, transportation, description, image) {
+        // const id = Date.now() + Math.floor(Math.random() * 1000);
+        const res = await fetch("/createItinerary", {
             method: 'POST',
             body: JSON.stringify({
                 id,
@@ -65,8 +74,9 @@ export default class Itinerary {
                 image
             })
         });
+        if (!res.ok) console.error("Failed to save itinerary to database.");
 
-        return new Itinerary(tripName, startDate, endDate, startLocation, endLocation, transportation, description, image);
+        return Itinerary.#instance = new Itinerary(id, tripName, startDate, endDate, startLocation, endLocation, transportation, description, image);
     }
 
     /**
@@ -79,8 +89,10 @@ export default class Itinerary {
             method: 'GET',
             body: JSON.stringify(id)
         });
+        if (!res.ok) console.error("Failed to load itinerary from database.");
+        
         const data = await res.json();
-        const itinerary = new Itinerary(
+        Itinerary.#instance = new Itinerary(
             data.id,
             data.tripName,
             data.startDate,
@@ -93,11 +105,11 @@ export default class Itinerary {
         data.activities.forEach(a => { // assume 'a' already in the format needed to create an Activity instance
             const newActivity = new Activity(a);
             const newStagedActivity = newActivity.clone(); // create a clone so the staged version doesn't modify the original
-            itinerary.activities.set(a.id, newActivity);
-            itinerary.stagedActivities.set(a.id, { change: 'none', newStagedActivity })
+            Itinerary.#instance.activities.set(a.id, newActivity);
+            Itinerary.#instance.stagedActivities.set(a.id, { change: 'none', newStagedActivity })
         });
 
-        return itinerary;
+        return Itinerary.#instance;
     }
 
     addActivity(
@@ -147,26 +159,58 @@ export default class Itinerary {
         );
     }
 
+    #getTransportationType = transportation => {
+        switch (transportation) {
+            case "Walking":
+                return "foot-walking";
+            case "Driving":
+                return "driving-road";
+            case "Biking":
+                return "cycling-road";
+            default:
+                throw new Error("Invalid transportation type: ", transportation);
+        }
+    }
+
+    async getDirections(transportation, activities) {
+        const req = {
+            transportation: this.#getTransportationType(transportation),
+            coordinates: activities.map(activity => [activity.location.lon, activity.location.lat])
+        }
+
+        const res = await fetch('http://localhost:4000/getDirections', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(req)
+        });
+
+        return await res.json();
+    }
+
     async optimizeRoute() {
 
         // filter out any activities that have been deleted and then get the raw activity
         const activitiesToOptimize = Array.from(this.stagedActivities.values()).filter(a => a.change !== 'Deleted').map(a => a.activity);
 
-        const jobs = [];
+        if (activitiesToOptimize.length >= 50) throw new Error("Too many activities!");
 
         tripStartLocation = this.startLocation;
         tripEndLocation = this.endLocation;
 
-        tripStartTime = this.startDate;
-        tripEndTime = this.endDate;
+        tripStartTime = convertDateToUnixTimestamp(this.startDate);
+        tripEndTime = convertDateToUnixTimestamp(this.endDate);
 
         const vehicle = {
             id: 1,
-            profile: this.transportation,
+            profile: this.#getTransportationType(this.transportation),
             start: [tripStartLocation.lon, tripStartLocation.lat],
             end: [tripEndLocation.lon, tripEndLocation.lat],
             time_window: [tripStartTime, tripEndTime]
         };
+
+        const jobs = [];
 
         // Iterate through each activity and structure it as an ORS "job"
         activitiesToOptimize.forEach(activity => {
@@ -175,7 +219,11 @@ export default class Itinerary {
                 location: [activity.location.lon, activity.location.lat],
                 service: activity.duration
             };
-            if (activity.timeframes.length > 0) job.time_windows = activity.timeframes;
+            if (activity.timeframes.length > 0) {
+                job.time_windows = activity.timeframes
+                    .map(timeframe => timeframe
+                        .map(time => convertDateToUnixTimestamp(time)));
+            }
             jobs.push(job);
         });
 
@@ -189,17 +237,19 @@ export default class Itinerary {
             }
         }
 
-        const response = await fetch('/optimization', {
+        const response = await fetch('http://localhost:4000/optimize', {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify(req)
         });
 
         const data = await response.json();
 
-        // Helper to calculate the day number relative to startDate
-        const calculateDayNumber = timestamp => {
-            return Math.floor((timestamp - this.startDate) / 86400) + 1;
-        };
+        if (data["unassigned"] && data["unassigned"].length > 0) {
+            throw new Error("Unable to optimize your itinerary. Try removing activities or adjusting their timings.")
+        } 
 
         const getActivityById = id => this.stagedActivities.get(id);
 
@@ -212,8 +262,17 @@ export default class Itinerary {
             const stagedActivity = getActivityById(id);
             const activity = stagedActivity.activity;
 
-            activity.startTime = arrival + waitingTime;
-            activity.finishTime = arrival + waitingTime + service;
+            const unixStartTime = arrival + waitingTime;
+            const unixFinishTime = arrival + waitingTime + service;
+
+            activity.startTime = new Date(unixStartTime);
+            activity.finishTime = new Date(unixFinishTime);
+
+            // Helper to calculate the day number relative to startDate
+            const calculateDayNumber = timestamp => {
+                const startDateUnix = convertDateToUnixTimestamp(this.startDate);
+                return Math.floor((timestamp - startDateUnix) / 86400) + 1;
+            };
 
             const startDay = calculateDayNumber(activity.startTime);
             const endDay = calculateDayNumber(activity.finishTime);
