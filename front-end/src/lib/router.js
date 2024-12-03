@@ -6,6 +6,7 @@
   */
 export function navigate(path) {
   const url = new URL(path, window.location)
+  console.log(url);
   history.pushState({}, "", url)
   history.go()
 }

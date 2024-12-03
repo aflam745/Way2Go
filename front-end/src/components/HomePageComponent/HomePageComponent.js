@@ -1,5 +1,6 @@
 import { BaseComponent } from "../BaseComponent/BaseComponent.js";
 import { ItineraryFormComponent } from "../ItineraryFormComponent/ItineraryFormComponent.js";
+import { navigate } from "../../lib/router.js";
 
 export class HomePageComponent extends BaseComponent {
   #container = null;
@@ -40,6 +41,7 @@ export class HomePageComponent extends BaseComponent {
     // Attach event listener to the form submission
     formElement.querySelector("form").onsubmit = (event) => {
       event.preventDefault(); // Prevent default form submission behavior
+      navigate("/editItinerary");
       this.#addItineraryTile(formElement);
     };
   }
