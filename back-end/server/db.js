@@ -11,11 +11,8 @@ const { Sequelize, DataTypes } = require('sequelize')
   * @property {Location} startLocation
   * @property {Location} endLocation
   * @property {unknown} transportation
-  * @property {unknown} description
-  */
-
-
-/**
+  * @property {string} description
+  *
   * @typedef {Object} Location
   * @property {number} lon
   * @property {number} lat
@@ -49,8 +46,8 @@ const locationModel = db.define('location', {
 })
 
 /**
-  * @property {Itinerary} itinerary
-  * @property {string} [imagePath]
+  * @param {Itinerary} itinerary - Instance of the Itinerary class
+  * @param {string} [imagePath] - Path of the image
   */
 async function saveItinerary(itinerary, imagePath) {
   const sif = await locationModel.create({ lon: itinerary.startLocation.lon, lat: itinerary.startLocation.lat, address: itinerary.startLocation.address })
@@ -72,7 +69,7 @@ async function saveItinerary(itinerary, imagePath) {
 }
 
 /** 
-  * @property {string} id
+  * @param {string} id
   */
 async function loadItinerary(id) {
 
