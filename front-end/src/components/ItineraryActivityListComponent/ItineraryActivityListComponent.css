@@ -1,0 +1,19 @@
+@import url("../../theme.css");
+/* Task List Container */
+.itinerary-activity-list {
+  background-color: var(--white);
+  box-shadow: 0px 4px 8px var(--shadow);
+  padding: 20px;
+  border: 1px solid var(--border-light-gray);
+  border-radius: 8px;
+  width: 100%;
+  max-width: 800px;
+  box-sizing: border-box;
+  margin-bottom: 20px;
+}
+
+.itinerary-activity-list h2 {
+  margin-top: 0;
+  font-size: 1.5rem;
+  text-align: center;
+}

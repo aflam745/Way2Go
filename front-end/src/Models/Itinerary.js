@@ -30,19 +30,19 @@ export default class Itinerary {
     }
 
     subscribeToEvents() {
-        const hub = EventHub.getInstance();
+        // const hub = EventHub.getInstance();
 
-        hub.subscribe(Events.NewActivity, activityData => {
-            this.addActivity(...activityData);
-        });
+        // hub.subscribe(Events.NewActivity, activityData => {
+        //     this.addActivity(...activityData);
+        // });
 
-        hub.subscribe(Events.DeleteActivity, activityId => {
-            this.deleteActivity(activityId);
-        });
+        // hub.subscribe(Events.DeleteActivity, activityId => {
+        //     this.deleteActivity(activityId);
+        // });
 
-        hub.subscribe(Events.EditActivity, activityData => {
-            this.updateActivity(activityData.id, ...activityData);
-        });
+        // hub.subscribe(Events.EditActivity, activityData => {
+        //     this.updateActivity(activityData.id, ...activityData);
+        // });
     }
 
 
@@ -90,7 +90,7 @@ export default class Itinerary {
             body: JSON.stringify(id)
         });
         if (!res.ok) console.error("Failed to load itinerary from database.");
-        
+
         const data = await res.json();
         Itinerary.#instance = new Itinerary(
             data.id,
@@ -249,7 +249,7 @@ export default class Itinerary {
 
         if (data["unassigned"] && data["unassigned"].length > 0) {
             throw new Error("Unable to optimize your itinerary. Try removing activities or adjusting their timings.")
-        } 
+        }
 
         const getActivityById = id => this.stagedActivities.get(id);
 
