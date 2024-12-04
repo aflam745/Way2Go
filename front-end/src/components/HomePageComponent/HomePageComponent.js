@@ -1,15 +1,18 @@
 import { BaseComponent } from "../BaseComponent/BaseComponent.js";
 import { ItineraryFormComponent } from "../ItineraryFormComponent/ItineraryFormComponent.js";
 import { navigate } from "../../lib/router.js";
+import { ActivityDatabase } from "../../Models/ActivityDatabase.js";
 
 export class HomePageComponent extends BaseComponent {
   #container = null;
   #formComponent = null;
+  #itineraryDB = null;
 
   constructor() {
     super();
     this.loadCSS("HomePageComponent");
     this.#formComponent = new ItineraryFormComponent();
+    this.#itineraryDB = new ActivityDatabase('ItineraryDB');
   }
 
   render() {
@@ -41,9 +44,35 @@ export class HomePageComponent extends BaseComponent {
     // Attach event listener to the form submission
     formElement.querySelector("form").onsubmit = (event) => {
       event.preventDefault(); // Prevent default form submission behavior
-      navigate("/editItinerary");
+
+      const fd = new FormData(event.target)
+      const obj = Object.fromEntries(fd);
+
+      console.log(obj);
+
+      const currentTime = new Date().toLocaleTimeString();
+      const randThreeDigitInt = (Math.floor((Math.random() * 900) + 100)).toString();
+      const id = currentTime + "_" + randThreeDigitInt;
+      const activityId = { id: id.replace(/[\s:]/g, '_') }
+
+      this.#addItineraryToIndexedDB({
+        ...obj,
+        ...activityId,
+      });
+
+      // navigate("/editItinerary");
       this.#addItineraryTile(formElement);
     };
+  }
+
+  #addItineraryToIndexedDB(formData){
+    this.#itineraryDB.addActivity(formData)
+      .then((message) => {
+        console.log(message);
+      })
+      .catch((error) => {
+        console.error("Failed to add activity to ActivityDB:", error);
+      });
   }
 
   #addItineraryTile(formElement) {
