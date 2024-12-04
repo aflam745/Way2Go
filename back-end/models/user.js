@@ -1,15 +1,7 @@
-import { Sequelize, DataTypes } from '@sequelize/core';
-import { SqliteDialect } from '@sequelize/sqlite3';
-//import { sequelize } from '../server/db.js'
-
-//Might remove this if defined in db.js
-const sequelize = new Sequelize( {
-    dialect: SqliteDialect,
-    storage: 'authentication.sqlite'
-});
+import { db } from '../server/db.js'
 
 // Define the User model
-const User = sequelize.define("User", {
+const User = db.define("User", {
     username: { 
         type: DataTypes.STRING, 
         unique: true, 
@@ -44,7 +36,7 @@ const User = sequelize.define("User", {
 });
 
 // Create the table if it doesn't exist
-await sequelize.sync();
+await db.sync();
 
 // Export the User model for use in other files
 export default User;
