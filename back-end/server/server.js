@@ -51,4 +51,31 @@ app.post('/optimize', async(req, res) => {
     res.json({ data });
 })
 
+app.get('/loadItinerary', async (req, res) => {
+  const body = req.body
+  const id = JSON.parse(body)
+  try {
+    const result = await loadItinerary(id)
+    res.set('Content-Type: application/json')
+    res.send(result)
+    return
+  } catch (error) {
+    res.sendStatus(404)
+    return
+  }
+})
+
+app.post('/saveItinerary', async (req, res) => {
+  const body = req.body
+  const data = JSON.parse(body.data)
+  try {
+    await saveItinerary(data)
+    res.sendStatus(200)
+    return
+  } catch (error) {
+    res.sendStatus(404)
+    return
+  }
+})
+
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}.`));
