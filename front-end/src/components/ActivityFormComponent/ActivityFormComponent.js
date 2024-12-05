@@ -573,7 +573,7 @@ export class ActivityFormComponent extends BaseComponent {
             const currentTime = Date.now();
             const randThreeDigitInt = (Math.floor((Math.random() * 900) + 100)).toString();
             const id = currentTime + randThreeDigitInt;
-            const activityId = { id: id.replace(/[\s:]/g, '_') };
+            const activityId = { id: id };
 
             this.#publishNewActivity2({
                 ...Object.fromEntries(formData),
@@ -666,10 +666,10 @@ export class ActivityFormComponent extends BaseComponent {
                     if (val) {
                         const date = new Date(val);
                         // format to "YYYY-MM-DDTHH:MM"
-                        input.value = date.toISOString().slice(0, 16); 
+                        input.value = date.toISOString().slice(0, 16);
                     } else {
                         // clear field if no value
-                        input.value = ''; 
+                        input.value = '';
                     }
                 } else {
                     // set other fields normally
@@ -678,7 +678,7 @@ export class ActivityFormComponent extends BaseComponent {
             }
         }
 
-        
+
 
         // Set duration if it is provided as hours and minutes
         if ('durationHours' in data && 'durationMinutes' in data) {
