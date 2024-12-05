@@ -5,6 +5,7 @@ import { ActivityItemComponent } from '../ActivityItemComponent/ActivityItemComp
 import { ActivityDatabase } from '../../Models/ActivityDatabase.js';
 import { navigate } from '../../lib/router.js';
 import Itinerary from '../../Models/Itinerary.js';
+import { getQueryParams, constructURLFromPath, serializeQueryParams } from '../../lib/router.js';
 
 export class ActivityListComponent extends BaseComponent {
   #container = null;
@@ -59,8 +60,14 @@ export class ActivityListComponent extends BaseComponent {
     });
 
     generateItineraryButton.addEventListener('click', async (e) => {
-        await Itinerary.optimizeRoute();
-        navigate('/itinerary');
+        // await Itinerary.optimizeRoute();
+
+        const queryParams = getQueryParams(window.location);
+        const itineraryId = { id: queryParams.id }
+        const serializedParams = serializeQueryParams(itineraryId);
+        const url = constructURLFromPath('/itinerary', serializedParams);
+
+        navigate(url);
     });
   }
 

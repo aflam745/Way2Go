@@ -1,6 +1,6 @@
 import { BaseComponent } from "../BaseComponent/BaseComponent.js";
 import { ItineraryFormComponent } from "../ItineraryFormComponent/ItineraryFormComponent.js";
-import { navigate } from "../../lib/router.js";
+import { constructURLFromPath, navigate, serializeQueryParams } from "../../lib/router.js";
 import { ActivityDatabase } from "../../Models/ActivityDatabase.js";
 
 export class HomePageComponent extends BaseComponent {
@@ -50,17 +50,20 @@ export class HomePageComponent extends BaseComponent {
 
       console.log(obj);
 
-      const currentTime = new Date().toLocaleTimeString();
+      const currentTime = Date.now();
       const randThreeDigitInt = (Math.floor((Math.random() * 900) + 100)).toString();
-      const id = currentTime + "_" + randThreeDigitInt;
-      const activityId = { id: id.replace(/[\s:]/g, '_') }
+      const id = currentTime + randThreeDigitInt;
+      const itineraryId = { id: id };
 
       this.#addItineraryToIndexedDB({
         ...obj,
-        ...activityId,
+        ...itineraryId,
       });
 
-      navigate("/editItinerary");
+      const serializedParams = serializeQueryParams(itineraryId);
+      const url = constructURLFromPath('/editItinerary', serializedParams);
+
+      navigate(url);
       this.#addItineraryTile(formElement);
     };
   }
