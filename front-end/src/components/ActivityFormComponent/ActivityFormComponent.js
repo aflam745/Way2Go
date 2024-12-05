@@ -554,11 +554,9 @@ export class ActivityFormComponent extends BaseComponent {
       * @param {FormData} formData  - Data from the form in formData format
       */
     #handleAddActivity2(formData) {
-        console.log(Object.fromEntries(formData));
 
         // Retrieve location from LocationSearchComponent
         const location = this.#locationSearchComponent.getLocation();
-        console.log(location);
         if (!location) {
             alert('Please provide a valid location.');
             return;
@@ -649,7 +647,6 @@ export class ActivityFormComponent extends BaseComponent {
 
             if (key === "address") {
                 const addressInput = document.getElementById('searchInput');
-                console.log(addressInput);
                 if (addressInput) {
                     // edit the address search bar
                     EventHub.getInstance().publish(Events.EditAddress, {

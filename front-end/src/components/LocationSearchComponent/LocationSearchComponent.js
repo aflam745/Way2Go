@@ -170,8 +170,6 @@ export default class LocationSearchComponent extends BaseComponent {
 
     #subscribeToEvents() {
         EventHub.getInstance().subscribe(Events.EditAddress, location => {
-            console.log("Hello");
-            console.log(this.#container.querySelectorAll('*'));
             this.#container.querySelector('#searchInput.search-input').value = location.address;
             this.#location = location;
         });
