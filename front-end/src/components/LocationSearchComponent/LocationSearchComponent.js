@@ -15,7 +15,6 @@ export default class LocationSearchComponent extends BaseComponent {
         this.loadCSS("LocationSearchComponent");
         this.#initContainer();
         this.#initLocation();
-        this.#subscribeToEvents();
     }
 
     /**
@@ -171,14 +170,9 @@ export default class LocationSearchComponent extends BaseComponent {
         return this.#searchInput.contains(event.target);
     }
 
-    #subscribeToEvents() {
-        EventHub.getInstance().subscribe(Events.EditAddress, location => {
-            // console.log(this.#container.querySelector('#searchInput'))
-            console.log(location);
-            console.log(this);
-            console.log(this.#container.children);
-            this.#searchInput.value = location.address;
-            this.#location = location;
-        });
+
+    autofillAddressField(location) {
+        this.#searchInput.value = location.address;
+        this.#location = location;
     }
 }
