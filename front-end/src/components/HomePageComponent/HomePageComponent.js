@@ -60,7 +60,7 @@ export class HomePageComponent extends BaseComponent {
         ...activityId,
       });
 
-      // navigate("/editItinerary");
+      navigate("/editItinerary");
       this.#addItineraryTile(formElement);
     };
   }
