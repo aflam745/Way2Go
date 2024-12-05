@@ -3,6 +3,7 @@ import { EventHub } from "../../eventhub/EventHub.js";
 import { Events } from "../../eventhub/Events.js";
 
 export default class LocationSearchComponent extends BaseComponent {
+    /** @type {HTMLDivElement | null} */
     #container = null;
     #searchInput = null;
     #searchResults = null;
@@ -12,6 +13,7 @@ export default class LocationSearchComponent extends BaseComponent {
     constructor() {
         super();
         this.loadCSS("LocationSearchComponent");
+        this.#initContainer();
         this.#initLocation();
         this.#subscribeToEvents();
     }
@@ -171,7 +173,11 @@ export default class LocationSearchComponent extends BaseComponent {
 
     #subscribeToEvents() {
         EventHub.getInstance().subscribe(Events.EditAddress, location => {
-            this.#container.querySelector('#searchInput.search-input').value = location.address;
+            // console.log(this.#container.querySelector('#searchInput'))
+            console.log(location);
+            console.log(this);
+            console.log(this.#container.children);
+            this.#searchInput.value = location.address;
             this.#location = location;
         });
     }

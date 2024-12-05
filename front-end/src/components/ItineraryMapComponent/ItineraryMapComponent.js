@@ -71,7 +71,7 @@ export class MapComponent extends BaseComponent {
             });
 
             // regular tooltip
-            const marker = L.marker([activity.lat, activity.lon], {icon} )
+            const marker = L.marker([activity.location.lat, activity.location.lon], {icon} )
                 .bindTooltip(originalTooltipText, {
                     permanent: true,
                     direction: "top",
@@ -83,7 +83,7 @@ export class MapComponent extends BaseComponent {
             marker.on('mouseover', () => {
                 const tooltip = marker.getTooltip();
                 tooltip.setContent(
-                    `${originalTooltipText}<br><i>${activity.address}</i>`
+                    `${originalTooltipText}<br><i>${activity.location.address}</i>`
                 );
                 tooltip.options.permanent = false;
                 marker.openTooltip();

@@ -113,6 +113,20 @@ export default class Itinerary {
         return Itinerary.#instance;
     }
 
+    static async loadItineraryFromDB2(itineraryId) {
+        const res = await fetch("/loadItinerary", {
+            method: 'GET',
+            body: JSON.stringify(id)
+        });
+        if (!res.ok) {
+            console.error("Failed to load itinerary from database.");
+            return;
+        }
+
+        return res.json();
+
+    }
+
     addActivity(
         name,
         isHotelStay,
@@ -305,12 +319,12 @@ export default class Itinerary {
 
 
 
-    static async optimizeRoute() {
+    static async optimizeRoute(itineraryId) {
         const activityDatabase = new ActivityDatabase('ActivityDB');
         const itineraryDatabase = new ActivityDatabase('ItineraryDB');
 
         const activities = activityDatabase.getAllActivity();
-        const itinerary = itineraryDatabase.getItinerary();
+        const itinerary = itineraryDatabase.getActivity(itineraryId);
 
         if (activities.length >= 50) {
             alert("Too many activities!");

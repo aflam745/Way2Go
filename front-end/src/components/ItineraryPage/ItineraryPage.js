@@ -4,6 +4,7 @@ import ItineraryHeaderComponent from "../ItineraryHeaderComponent/ItineraryHeade
 import { MapComponent } from "../ItineraryMapComponent/ItineraryMapComponent.js";
 import { EventHub } from "../../eventhub/EventHub.js";
 import { Events } from "../../eventhub/Events.js";
+import Itinerary from "../../Models/Itinerary.js";
 
 export default class ItineraryPage extends BaseComponent {
     #container = null;
@@ -24,7 +25,9 @@ export default class ItineraryPage extends BaseComponent {
     }
 
     #loadMap() {
-        const mapComponent = new MapComponent();
+        const x = Array.from(Itinerary.getInstance().activities.values());
+        console.log(x);
+        const mapComponent = new MapComponent(x);
         this.#container.appendChild(mapComponent.render());
     }
 

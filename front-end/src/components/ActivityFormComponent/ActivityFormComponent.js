@@ -649,6 +649,11 @@ export class ActivityFormComponent extends BaseComponent {
                 const addressInput = document.getElementById('searchInput');
                 if (addressInput) {
                     // edit the address search bar
+                    console.log({
+                        lon: data.lon,
+                        lat: data.lat,
+                        address: data.address
+                    })
                     EventHub.getInstance().publish(Events.EditAddress, {
                         lon: data.lon,
                         lat: data.lat,

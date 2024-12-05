@@ -60,7 +60,7 @@ export class ActivityListComponent extends BaseComponent {
     });
 
     generateItineraryButton.addEventListener('click', async (e) => {
-        // await Itinerary.optimizeRoute();
+        await Itinerary.optimizeRoute(itineraryId);
 
         const queryParams = getQueryParams(window.location);
         const itineraryId = { id: queryParams.id }
