@@ -1,7 +1,8 @@
 import Activity from "./Activity.js";
 import { EventHub } from "../eventhub/EventHub.js"
 import { Events } from "../eventhub/Events.js"
-import { convertDateToUnixTimestamp } from "../utils/TimeConversions.js";
+import { convertDateToUnixTimestamp, convertHoursAndMinsToSeconds } from "../utils/TimeConversions.js";
+import { ActivityDatabase } from "./ActivityDatabase.js";
 
 export default class Itinerary {
     static #instance = null;
@@ -159,7 +160,7 @@ export default class Itinerary {
         );
     }
 
-    #getTransportationType = transportation => {
+    static #getTransportationType = transportation => {
         switch (transportation) {
             case "Walking":
                 return "foot-walking";
@@ -172,10 +173,10 @@ export default class Itinerary {
         }
     }
 
-    async getDirections(transportation, activities) {
+    static async getDirections(transportation, activities) {
         const req = {
             transportation: this.#getTransportationType(transportation),
-            coordinates: activities.map(activity => [activity.location.lon, activity.location.lat])
+            coordinates: activities.map(activity => [activity.lon, activity.lat])
         }
 
         const res = await fetch('http://localhost:4000/getDirections', {
@@ -189,22 +190,142 @@ export default class Itinerary {
         return await res.json();
     }
 
-    async optimizeRoute() {
+    // async optimizeRoute() {
 
-        // filter out any activities that have been deleted and then get the raw activity
-        const activitiesToOptimize = Array.from(this.stagedActivities.values()).filter(a => a.change !== 'Deleted').map(a => a.activity);
+    //     // filter out any activities that have been deleted and then get the raw activity
+    //     const activitiesToOptimize = Array.from(this.stagedActivities.values()).filter(a => a.change !== 'Deleted').map(a => a.activity);
 
-        if (activitiesToOptimize.length >= 50) throw new Error("Too many activities!");
+    //     if (activitiesToOptimize.length >= 50) throw new Error("Too many activities!");
 
-        tripStartLocation = this.startLocation;
-        tripEndLocation = this.endLocation;
+    //     tripStartLocation = this.startLocation;
+    //     tripEndLocation = this.endLocation;
 
-        tripStartTime = convertDateToUnixTimestamp(this.startDate);
-        tripEndTime = convertDateToUnixTimestamp(this.endDate);
+    //     tripStartTime = convertDateToUnixTimestamp(this.startDate);
+    //     tripEndTime = convertDateToUnixTimestamp(this.endDate);
+
+    //     const vehicle = {
+    //         id: 1,
+    //         profile: this.#getTransportationType(this.transportation),
+    //         start: [tripStartLocation.lon, tripStartLocation.lat],
+    //         end: [tripEndLocation.lon, tripEndLocation.lat],
+    //         time_window: [tripStartTime, tripEndTime]
+    //     };
+
+    //     const jobs = [];
+
+    //     // Iterate through each activity and structure it as an ORS "job"
+    //     activitiesToOptimize.forEach(activity => {
+    //         const job = {
+    //             id: activity.id,
+    //             location: [activity.location.lon, activity.location.lat],
+    //             service: activity.duration
+    //         };
+    //         if (activity.timeframes.length > 0) {
+    //             job.time_windows = activity.timeframes
+    //                 .map(timeframe => timeframe
+    //                     .map(time => convertDateToUnixTimestamp(time)));
+    //         }
+    //         jobs.push(job);
+    //     });
+
+    //     const req =
+    //     {
+    //         "jobs": jobs,
+    //         "shipments": [],
+    //         "vehicles": [vehicle],
+    //         "options": {
+    //             "g": true
+    //         }
+    //     }
+
+    //     const response = await fetch('http://localhost:4000/optimize', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //         },
+    //         body: JSON.stringify(req)
+    //     });
+
+    //     const data = await response.json();
+
+    //     if (data["unassigned"] && data["unassigned"].length > 0) {
+    //         throw new Error("Unable to optimize your itinerary. Try removing activities or adjusting their timings.")
+    //     }
+
+    //     const getActivityById = id => this.stagedActivities.get(id);
+
+    //     const trip = data.routes[0];
+    //     const steps = trip.steps;
+
+    //     steps.forEach(step => {
+    //         const { id, arrival, service, waiting_time: waitingTime } = step;
+
+    //         const stagedActivity = getActivityById(id);
+    //         const activity = stagedActivity.activity;
+
+    //         const unixStartTime = arrival + waitingTime;
+    //         const unixFinishTime = arrival + waitingTime + service;
+
+    //         activity.startTime = new Date(unixStartTime);
+    //         activity.finishTime = new Date(unixFinishTime);
+
+    //         // Helper to calculate the day number relative to startDate
+    //         const calculateDayNumber = timestamp => {
+    //             const startDateUnix = convertDateToUnixTimestamp(this.startDate);
+    //             return Math.floor((timestamp - startDateUnix) / 86400) + 1;
+    //         };
+
+    //         const startDay = calculateDayNumber(activity.startTime);
+    //         const endDay = calculateDayNumber(activity.finishTime);
+
+    //         activity.day = [startDay];
+
+    //         // if it straddles midnight, also assign it to the next day
+    //         if (endDay > startDay) {
+    //             activity.day.push(endDay);
+    //         }
+    //     });
+
+    // }
+
+    acceptOptimizedItinerary() {
+        const newActivities = new Map();
+        this.activities = this.stagedActivities.forEach((a, _) => {
+            const activity = a.activity;
+            const activityClone = activity.clone();
+            this.newActivies.set(activityClone.id, activityClone);
+        })
+        this.activities = newActivities;
+    }
+
+    declineOptimizedItinerary() { }
+
+
+
+
+
+
+    static async optimizeRoute() {
+        const activityDatabase = new ActivityDatabase('ActivityDB');
+        const itineraryDatabase = new ActivityDatabase('ItineraryDB');
+
+        const activities = activityDatabase.getAllActivity();
+        const itinerary = itineraryDatabase.getItinerary();
+
+        if (activities.length >= 50) {
+            alert("Too many activities!");
+            return;
+        }
+
+        tripStartLocation = itinerary.startLocation;
+        tripEndLocation = itinerary.endLocation;
+
+        tripStartTime = convertDateToUnixTimestamp(new Date(itinerary.startDate));
+        tripEndTime = convertDateToUnixTimestamp(new Date(itinerary.endDate));
 
         const vehicle = {
             id: 1,
-            profile: this.#getTransportationType(this.transportation),
+            profile: this.#getTransportationType(itinerary.transportation),
             start: [tripStartLocation.lon, tripStartLocation.lat],
             end: [tripEndLocation.lon, tripEndLocation.lat],
             time_window: [tripStartTime, tripEndTime]
@@ -212,17 +333,21 @@ export default class Itinerary {
 
         const jobs = [];
 
-        // Iterate through each activity and structure it as an ORS "job"
-        activitiesToOptimize.forEach(activity => {
+        activities.forEach(activity => {
             const job = {
                 id: activity.id,
-                location: [activity.location.lon, activity.location.lat],
-                service: activity.duration
+                location: [activity.lon, activity.lat],
+                service: convertHoursAndMinsToSeconds(activity.durationHours, activity.durationMinutes)
             };
-            if (activity.timeframes.length > 0) {
-                job.time_windows = activity.timeframes
-                    .map(timeframe => timeframe
-                        .map(time => convertDateToUnixTimestamp(time)));
+
+            if (activity.earliestStartTime && activity.latestEndTime) {
+                // assign the time_windows to an array of 1 window given by the earliest/latest start/end times
+                job.time_windows = [
+                    [
+                        convertDateToUnixTimestamp(new Date(activity.earliestStartTime)), 
+                        convertDateToUnixTimestamp(new Date(activity.latestEndTime))
+                    ]
+                ]
             }
             jobs.push(job);
         });
@@ -237,6 +362,8 @@ export default class Itinerary {
             }
         }
 
+        console.log("Optimizing with request", req)
+
         const response = await fetch('http://localhost:4000/optimize', {
             method: 'POST',
             headers: {
@@ -248,10 +375,9 @@ export default class Itinerary {
         const data = await response.json();
 
         if (data["unassigned"] && data["unassigned"].length > 0) {
-            throw new Error("Unable to optimize your itinerary. Try removing activities or adjusting their timings.")
+            alert("Unable to optimize your itinerary. Try removing activities or adjusting their timings.");
+            return;
         }
-
-        const getActivityById = id => this.stagedActivities.get(id);
 
         const trip = data.routes[0];
         const steps = trip.steps;
@@ -259,8 +385,7 @@ export default class Itinerary {
         steps.forEach(step => {
             const { id, arrival, service, waiting_time: waitingTime } = step;
 
-            const stagedActivity = getActivityById(id);
-            const activity = stagedActivity.activity;
+            const activity = activities[id];
 
             const unixStartTime = arrival + waitingTime;
             const unixFinishTime = arrival + waitingTime + service;
@@ -270,12 +395,12 @@ export default class Itinerary {
 
             // Helper to calculate the day number relative to startDate
             const calculateDayNumber = timestamp => {
-                const startDateUnix = convertDateToUnixTimestamp(this.startDate);
+                const startDateUnix = convertDateToUnixTimestamp(itinerary.startDate);
                 return Math.floor((timestamp - startDateUnix) / 86400) + 1;
             };
 
-            const startDay = calculateDayNumber(activity.startTime);
-            const endDay = calculateDayNumber(activity.finishTime);
+            const startDay = calculateDayNumber(unixStartTime);
+            const endDay = calculateDayNumber(unixFinishTime);
 
             activity.day = [startDay];
 
@@ -283,20 +408,18 @@ export default class Itinerary {
             if (endDay > startDay) {
                 activity.day.push(endDay);
             }
+
+            // update the activity in IndexedDB
+            activityDatabase.deleteActivity(id);
+            activityDatabase.addActivity(activity);
         });
 
+        // save activities to database
+        const res = await fetch("http://localhost:4000/saveActivities", {
+            method: 'POST',
+            body: JSON.stringify(activities)
+        });
+        if (!res.ok) console.error("Failed to save activities to database.");
     }
-
-    acceptOptimizedItinerary() {
-        const newActivities = new Map();
-        this.activities = this.stagedActivities.forEach((a, _) => {
-            const activity = a.activity;
-            const activityClone = activity.clone();
-            this.newActivies.set(activityClone.id, activityClone);
-        })
-        this.activities = newActivities;
-    }
-
-    declineOptimizedItinerary() { }
 
 }

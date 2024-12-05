@@ -1,4 +1,6 @@
 import { BaseComponent } from "../BaseComponent/BaseComponent.js"
+import { EventHub } from "../../eventhub/EventHub.js";
+import { Events } from "../../eventhub/Events.js";
 
 export default class LocationSearchComponent extends BaseComponent {
     #container = null;
@@ -11,6 +13,7 @@ export default class LocationSearchComponent extends BaseComponent {
         super();
         this.loadCSS("LocationSearchComponent");
         this.#initLocation();
+        this.#subscribeToEvents();
     }
 
     /**
@@ -67,7 +70,7 @@ export default class LocationSearchComponent extends BaseComponent {
         if (!this.#isClickInContainer(event)) {
             // if the user has a partially entered (nonvalid) address,
             // then it will reset the input field to the last entered address
-            this.#resetEntry();
+            this.resetEntry();
         } else if (this.#isClickInInputField(event)) {
             // show the dropdown when clicking the search input
             this.#displaySearchResults();
@@ -95,7 +98,7 @@ export default class LocationSearchComponent extends BaseComponent {
         }, 1500);
     }
 
-    #resetEntry() {
+    resetEntry() {
         this.#searchResults.innerHTML = '';
         this.#searchResults.style.display = 'none';
         // if all text is removed, then also clear the saved address
@@ -163,5 +166,12 @@ export default class LocationSearchComponent extends BaseComponent {
 
     #isClickInInputField(event) {
         return this.#searchInput.contains(event.target);
+    }
+
+    #subscribeToEvents() {
+        EventHub.getInstance().subscribe(Events.EditAddress, location => {
+            this.#container.querySelector('#searchInput.search-input').value = location.address;
+            this.#location = location;
+        });
     }
 }
