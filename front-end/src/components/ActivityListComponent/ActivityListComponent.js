@@ -4,9 +4,10 @@ import { BaseComponent } from '../BaseComponent/BaseComponent.js';
 import { ActivityItemComponent } from '../ActivityItemComponent/ActivityItemComponent.js';
 import { ActivityDatabase } from '../../Models/ActivityDatabase.js';
 import { navigate } from '../../lib/router.js';
+import Itinerary from '../../Models/Itinerary.js';
 
 export class ActivityListComponent extends BaseComponent {
-  #container = null; // Private variable to store the container element
+  #container = null;
   #activityDB = null;
 
   constructor() {
@@ -57,8 +58,9 @@ export class ActivityListComponent extends BaseComponent {
       this.#clearActivityList();
     });
 
-    generateItineraryButton.addEventListener('click', (e) => {
-      navigate('/itinerary');
+    generateItineraryButton.addEventListener('click', async (e) => {
+        await Itinerary.optimizeRoute();
+        navigate('/itinerary');
     });
   }
 

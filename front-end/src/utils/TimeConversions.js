@@ -27,3 +27,7 @@ export function convertUnixToDateString(timestamp) {
 export function convertDateToUnixTimestamp(date) {
     return Math.floor(date.getTime() / 1000);
 }
+
+export function convertHoursAndMinsToSeconds(hours, mins) {
+    return (hours * 3600) + (mins * 60);
+}
