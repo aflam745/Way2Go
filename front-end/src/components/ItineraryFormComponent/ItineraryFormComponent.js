@@ -38,8 +38,8 @@ export class ItineraryFormComponent extends BaseComponent {
       <form>
         <h2>Create New Itinerary</h2>
 
-        <label for="location">Name of location:</label>
-        <input type="text" id="location" name="location" placeholder="Enter location">
+        <label for="location">Name of Trip:</label>
+        <input type="text" id="location" name="location" placeholder="Enter name">
         <br>
 
         <label for="picture">Insert Picture:</label>
