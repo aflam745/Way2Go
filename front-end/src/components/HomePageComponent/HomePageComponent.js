@@ -46,7 +46,12 @@ export class HomePageComponent extends BaseComponent {
       event.preventDefault(); // Prevent default form submission behavior
 
       const fd = new FormData(event.target)
+      const locationEntries = this.#formComponent.getLocationEntries();
+      console.log(locationEntries);
+      
       const obj = Object.fromEntries(fd);
+      obj["startLocation"] = locationEntries.startLocationEntry;
+      obj["endLocation"] = locationEntries.endLocationEntry;
 
       console.log(obj);
 
@@ -62,7 +67,6 @@ export class HomePageComponent extends BaseComponent {
 
       const serializedParams = serializeQueryParams(itineraryId);
       const url = constructURLFromPath('/editItinerary', serializedParams);
-
       navigate(url);
       this.#addItineraryTile(formElement);
     };
