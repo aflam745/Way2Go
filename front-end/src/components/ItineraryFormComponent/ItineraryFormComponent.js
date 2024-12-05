@@ -31,7 +31,6 @@ export class ItineraryFormComponent extends BaseComponent {
     this.#container.querySelector('#start-location-container').appendChild(this.#startLocationEntry.render());
     this.#container.querySelector('#end-location-container').appendChild(this.#endLocationEntry.render());
 
-    // this.#container.querySelector('form').addEventListener('submit', this.#handleSubmit.bind(this));
   }
 
   #getTemplate() {
@@ -69,29 +68,4 @@ export class ItineraryFormComponent extends BaseComponent {
       </form>
     `;
   }
-  // #handleSubmit(event) {
-  //   event.preventDefault();
-
-  //   // Gather data from form
-  //   const location = this.#locationSearchComponent.getLocation();
-  //   const picture = this.#container.querySelector('#picture').files[0];
-  //   const startDate = this.#container.querySelector('#startDate').value;
-  //   const endDate = this.#container.querySelector('#endDate').value;
-  //   const description = this.#container.querySelector('#description').value;
-
-  //   // Validate required fields (e.g., location, dates)
-  //   if (!location.address || !startDate || !endDate) {
-  //     alert('Please fill out all required fields.');
-  //     return;
-  //   }
-
-  //   // Create the itinerary object
-  //   const itinerary = {
-  //     location,
-  //     picture,
-  //     startDate,
-  //     endDate,
-  //     description,
-  //   };
-  // }
 }
