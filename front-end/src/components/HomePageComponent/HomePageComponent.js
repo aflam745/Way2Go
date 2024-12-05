@@ -46,13 +46,18 @@ export class HomePageComponent extends BaseComponent {
       event.preventDefault(); // Prevent default form submission behavior
 
       const fd = new FormData(event.target)
+      const locationEntries = this.#formComponent.getLocationEntries();
+      console.log(locationEntries);
+      
       const obj = Object.fromEntries(fd);
+      obj["startLocation"] = locationEntries.startLocationEntry;
+      obj["endLocation"] = locationEntries.endLocationEntry;
 
       console.log(obj);
 
       const currentTime = new Date().toLocaleTimeString();
       const randThreeDigitInt = (Math.floor((Math.random() * 900) + 100)).toString();
-      const id = currentTime + "_" + randThreeDigitInt;
+      const id = currentTime + randThreeDigitInt;
       const activityId = { id: id.replace(/[\s:]/g, '_') }
 
       this.#addItineraryToIndexedDB({
@@ -60,7 +65,7 @@ export class HomePageComponent extends BaseComponent {
         ...activityId,
       });
 
-      // navigate("/editItinerary");
+      navigate("/editItinerary");
       this.#addItineraryTile(formElement);
     };
   }
