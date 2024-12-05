@@ -39,7 +39,7 @@ export class ItineraryFormComponent extends BaseComponent {
         <h2>Create New Itinerary</h2>
 
         <label for="location">Name of Trip:</label>
-        <input type="text" id="location" name="location" placeholder="Enter name">
+        <input type="text" id="location" name="location" placeholder="Enter name" required>
         <br>
 
         <label for="picture">Insert Picture:</label>
@@ -52,11 +52,11 @@ export class ItineraryFormComponent extends BaseComponent {
         <div id="end-location-container"></div>
 
         <label for="start-date">Start Date & Time:</label>
-        <input type="datetime-local" id="start-date" name="startDate">
+        <input type="datetime-local" id="start-date" name="startDate" required>
         <br>
 
         <label for="endDate">End Date & Time:</label>
-        <input type="datetime-local" id="end-date" name="endDate">
+        <input type="datetime-local" id="end-date" name="endDate" required>
         <br>
 
         <label for="description">Description:</label>

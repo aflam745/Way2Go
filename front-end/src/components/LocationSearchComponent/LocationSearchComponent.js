@@ -51,6 +51,7 @@ export default class LocationSearchComponent extends BaseComponent {
         this.#searchInput.classList.add('search-input');
         this.#searchInput.id = 'searchInput';
         this.#searchInput.placeholder = 'Enter a location...';
+        this.#searchInput.required = true;
         this.#container.appendChild(this.#searchInput);
 
         // dropdown display of results
