@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { saveActivities } = require('./db');
+const { saveActivities, loadItineraryWithActivities } = require('./db');
 require('dotenv').config();
 
 const fetch = (...args) =>
@@ -76,6 +76,16 @@ app.post('/saveItinerary', async (req, res) => {
   } catch (error) {
     res.sendStatus(404)
     return
+  }
+})
+
+app.get('/loadCompleteItinerary/:id', async (req, res) => {
+  const id = req.params.id
+  try {
+    const out = await loadItineraryWithActivities(id)
+    res.json(out)
+  } catch (error) {
+    res.sendStatus(404)
   }
 })
 
