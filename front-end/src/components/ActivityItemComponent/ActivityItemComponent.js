@@ -45,7 +45,7 @@ export class ActivityItemComponent extends BaseComponent {
 
   #createActivityTitle() {
     const activityTitle = this.#container.querySelector('.activityTitle');
-    activityTitle.textContent = this.activityData.location;
+    activityTitle.textContent = this.activityData.name;
   }
 
   #attachEventListeners(){

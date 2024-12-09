@@ -1,21 +1,22 @@
 /**
-  * Navigates to the URL triggering a popstate event 
+  * Navigates to the URL triggering a popstate event
   * for the router to properly re-render the page
   *
   * @param {string} path
   */
 export function navigate(path) {
   const url = new URL(path, window.location)
+  console.log(url);
   history.pushState({}, "", url)
   history.go()
 }
 
 
 /**
-  * Takes the query params from a URL and transforms them 
+  * Takes the query params from a URL and transforms them
   * into a Javascript Object
   *
-  * @param {URL | Location} url 
+  * @param {URL | Location} url
   * @returns {Object}
   */
 export function getQueryParams(url) {
@@ -40,10 +41,10 @@ export function serializeQueryParams(obj) {
 /**
   * Constructs a URL from a path and URLSearchParams
   *
-  * @param {string} path 
-  * @param {string | URLSearchParams} params 
+  * @param {string} path
+  * @param {string | URLSearchParams} params
   */
 export function constructURLFromPath(path, params) {
-  const outURL = new URL(`${window.location.host}${path}?${params}`)
-  return outURL
+  const outURL = new URL(`${window.location.origin}${path}?${params}`);
+  return outURL;
 }

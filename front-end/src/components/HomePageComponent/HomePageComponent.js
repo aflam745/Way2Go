@@ -1,14 +1,18 @@
 import { BaseComponent } from "../BaseComponent/BaseComponent.js";
 import { ItineraryFormComponent } from "../ItineraryFormComponent/ItineraryFormComponent.js";
+import { constructURLFromPath, navigate, serializeQueryParams } from "../../lib/router.js";
+import { ActivityDatabase } from "../../Models/ActivityDatabase.js";
 
 export class HomePageComponent extends BaseComponent {
   #container = null;
   #formComponent = null;
+  #itineraryDB = null;
 
   constructor() {
     super();
     this.loadCSS("HomePageComponent");
     this.#formComponent = new ItineraryFormComponent();
+    this.#itineraryDB = new ActivityDatabase('ItineraryDB');
   }
 
   render() {
@@ -40,8 +44,42 @@ export class HomePageComponent extends BaseComponent {
     // Attach event listener to the form submission
     formElement.querySelector("form").onsubmit = (event) => {
       event.preventDefault(); // Prevent default form submission behavior
+
+      const fd = new FormData(event.target)
+      const locationEntries = this.#formComponent.getLocationEntries();
+      console.log(locationEntries);
+      
+      const obj = Object.fromEntries(fd);
+      obj["startLocation"] = locationEntries.startLocationEntry;
+      obj["endLocation"] = locationEntries.endLocationEntry;
+
+      console.log(obj);
+
+      const currentTime = Date.now();
+      const randThreeDigitInt = (Math.floor((Math.random() * 900) + 100)).toString();
+      const id = currentTime + randThreeDigitInt;
+      const itineraryId = { id: id };
+
+      this.#addItineraryToIndexedDB({
+        ...obj,
+        ...itineraryId,
+      });
+
+      const serializedParams = serializeQueryParams(itineraryId);
+      const url = constructURLFromPath('/editItinerary', serializedParams);
+      navigate(url);
       this.#addItineraryTile(formElement);
     };
+  }
+
+  #addItineraryToIndexedDB(formData){
+    this.#itineraryDB.addActivity(formData)
+      .then((message) => {
+        console.log(message);
+      })
+      .catch((error) => {
+        console.error("Failed to add activity to ActivityDB:", error);
+      });
   }
 
   #addItineraryTile(formElement) {

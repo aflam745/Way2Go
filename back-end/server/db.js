@@ -1,5 +1,4 @@
 const fs = require('node:fs')
-
 const { Sequelize, DataTypes } = require('sequelize')
 
 /**
@@ -11,68 +10,57 @@ const { Sequelize, DataTypes } = require('sequelize')
   * @property {Location} startLocation
   * @property {Location} endLocation
   * @property {unknown} transportation
-  * @property {unknown} description
-  */
-
-
-/**
+  * @property {string} description
+  *
   * @typedef {Object} Location
   * @property {number} lon
   * @property {number} lat
   * @property {string} address
+  *
+  * @typedef {Object} ItineraryResult
+  * @property {string} data
+  * @property {string} imagePath
   */
 
 const db = new Sequelize({ dialect: 'sqlite', storage: 'records.db' })
 
 const itineraryModel = db.define('itinerary', {
   id: { primaryKey: true, type: DataTypes.STRING },
-  tripName: { type: DataTypes.STRING, allowNull: false },
-  startDate: { type: DataTypes.STRING, allowNull: false },
-  endDate: { type: DataTypes.STRING, allowNull: false },
-  startLocationID: { type: DataTypes.INTEGER, unique: true, allowNull: false },
-  endLocationID: { type: DataTypes.INTEGER, unique: true, allowNull: false },
-  description: { type: DataTypes.STRING, allowNull: false },
-  imagePath: { type: DataTypes.STRING, allowNull: true }
+  data: {allowNull: false, type: DataTypes.STRING},
+  imagePath: DataTypes.STRING
 })
 
-// TODO: Figure out foreign key nonsense later
-const locationModel = db.define('location', {
-  lon: DataTypes.FLOAT,
-  lat: DataTypes.FLOAT,
-  address: DataTypes.STRING,
-  id: {
-    type: DataTypes.STRING,
-    primaryKey: true,
-    autoIncrement: true,
-    references: { model: itineraryModel, key: 'id' }
-  }
+const ActivityModel = db.define('activity', {
+  id: { type: DataTypes.STRING, primaryKey: true },
+  itineraryId: {type: DataTypes.STRING, allowNull: false},
+  data: {allowNull: false, type: DataTypes.STRING}
 })
+
 
 /**
-  * @property {Itinerary} itinerary
-  * @property {string} [imagePath]
+  * @param {Itinerary} itinerary - Instance of the Itinerary Object
+  * @param {string} [imagePath] - Path of the image
+  *
+  * Saves the itinerary as a JSON String to the database
   */
 async function saveItinerary(itinerary, imagePath) {
-  const sif = await locationModel.create({ lon: itinerary.startLocation.lon, lat: itinerary.startLocation.lat, address: itinerary.startLocation.address })
-  const eif = await locationModel.create({ lon: itinerary.endLocation.lon, lat: itinerary.endLocation.lat, address: itinerary.endLocation.address })
+  return await db.query(
+    `insert into itinerary values(?, json(?), ?)`,
+    { raw: true, replacements: [itinerary.id, JSON.stringify(itinerary), imagePath ?? null] }
+  )
+}
 
-
-  itineraryModel.create(
-    {
-      id: itinerary.id,
-      tripName: itinerary.tripName,
-      startDate: itinerary.startDate.toString(),
-      endDate: itinerary.endDate.toString(),
-      startLocationID: sif.id, // NOTE: Does this work?
-      endLocationID: eif.id,
-      description: itinerary.description,
-      imagePath: imagePath ?? null
-    }
+async function saveActivity(activity) {
+  return await db.query(
+    `insert into activity values(?, json(?))`,
+    {raw: true, replacements: [activity.id, JSON.stringify(activity)]}
   )
 }
 
 /** 
-  * @property {string} id
+  * @param {string} id
+  *
+  * Retrieves the itinerary as a JSON string from the database
   */
 async function loadItinerary(id) {
 
@@ -81,14 +69,10 @@ async function loadItinerary(id) {
     * return the wrong type I don't know
     * if it returns the right thing yet
     *
-    * @type {Itinerary} 
+    * @type {ItineraryResult}
     */
   const result = await db.query(`
-    select id, tripName, startDate, endDate, l1 as startLocation, l2 as endLocation, description, imagePath
-      from itinerary
-      join location as l1 on l1.id = itinerary.startLocationID
-      join location as l2 on l2.id = itinerary.endLocationID
-      where id = ?
+    select data, imagePath from itinerary where id = ? limit 1
   `, { raw: true, replacements: { id: id } })
 
   const path = result.imagePath
@@ -97,14 +81,29 @@ async function loadItinerary(id) {
     // WARNING: I hope this doesn't throw
     const file = fs.readFileSync(path)
 
-    return { file, itinerary: result }
+    return { file, itinerary: result.data }
   }
 
-  return { itinerary: result }
+  return { itinerary: result.data }
 }
 
+
+/**
+  * WARNING: This function is untested may blow up
+  *
+  * @param {Activity[]} activites 
+  */
+async function saveActivities(activites) {
+  const a = activites.map(arr => [a.id, a.itineraryId, JSON.stringify(a)])
+  const result = await db.query(`insert into activity values ${data.map(a => '(?)').join(',')}`, {
+    replacements: a
+  })
+  return 
+}
 
 exports.db = new sqlite3('records.db')
 exports.loadItinerary = loadItinerary
 exports.saveItinerary = saveItinerary
+exports.saveActivity = saveActivity
+exports.saveActivities = saveActivities
 

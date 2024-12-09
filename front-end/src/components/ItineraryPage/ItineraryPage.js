@@ -1,4 +1,5 @@
 import { BaseComponent } from "../BaseComponent/BaseComponent.js";
+import { ItineraryActivityListComponent } from "../ItineraryActivityListComponent/ItineraryActivityListComponent.js";
 import ItineraryHeaderComponent from "../ItineraryHeaderComponent/ItineraryHeaderComponent.js";
 import { MapComponent } from "../ItineraryMapComponent/ItineraryMapComponent.js";
 import { EventHub } from "../../eventhub/EventHub.js";
@@ -8,7 +9,7 @@ export default class ItineraryPage extends BaseComponent {
     #container = null;
     #selectedDay = 1;
     constructor() {
-
+        super();
     }
 
     #initContainer() {
@@ -19,17 +20,17 @@ export default class ItineraryPage extends BaseComponent {
 
     #loadHeader() {
         const itineraryHeaderComponent = new ItineraryHeaderComponent();
-        this.#container.appendChild(itineraryHeaderComponent);
+        this.#container.appendChild(itineraryHeaderComponent.render());
     }
 
     #loadMap() {
         const mapComponent = new MapComponent();
-        this.#container.appendChild(mapComponent);
+        this.#container.appendChild(mapComponent.render());
     }
 
     #loadActivityList() {
         const activityListComponent = new ItineraryActivityListComponent();
-        this.#container.appendChild(activityListComponent);
+        this.#container.appendChild(activityListComponent.render());
     }
 
     #attachEventListeners() {

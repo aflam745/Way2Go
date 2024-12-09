@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const { saveActivities } = require('./db');
 require('dotenv').config();
 //Next two lines are for user routes
 const {body, validationRes} = require('express-validator');
@@ -81,5 +82,46 @@ app.post(
         }
     }
 );
+
+app.get('/loadItinerary', async (req, res) => {
+  const body = req.body
+  const id = JSON.parse(body)
+  try {
+    const result = await loadItinerary(id)
+    res.set('Content-Type: application/json')
+    res.send(result)
+    return
+  } catch (error) {
+    res.sendStatus(404)
+    return
+  }
+})
+
+app.post('/saveItinerary', async (req, res) => {
+  const body = req.body
+  const data = JSON.parse(body.data)
+  try {
+    await saveItinerary(data)
+    res.sendStatus(200)
+    return
+  } catch (error) {
+    res.sendStatus(404)
+    return
+  }
+})
+
+app.post('/saveActivites', async (req, res) => {
+  const body = req.body
+  // WARNING: I do not know how the fetch method is structured so this may blow up
+  const data = JSON.parse(body)
+  try {
+    await saveActivities(data)
+    res.sendStatus(200)
+    return
+  } catch (error) {
+    res.sendStatus(404)
+    return
+  }
+})
 
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}.`));
