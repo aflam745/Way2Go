@@ -12,8 +12,24 @@ export class HomePageComponent extends BaseComponent {
   constructor() {
     super();
     this.loadCSS("HomePageComponent");
+    this.#loadFontAwesome();
     this.#formComponent = new ItineraryFormComponent();
     this.#itineraryDB = new ActivityDatabase('ItineraryDB');
+  }
+
+  #loadFontAwesome() {
+    if (document.querySelector('link[href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"]')) {
+      // Font Awesome is already loaded
+      return;
+    }
+
+    const faLink = document.createElement('link');
+    faLink.rel = 'stylesheet';
+    faLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
+    faLink.integrity = 'sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==';
+    faLink.crossOrigin = 'anonymous';
+    faLink.referrerPolicy = 'no-referrer';
+    document.head.appendChild(faLink);
   }
 
   render() {
@@ -66,9 +82,8 @@ export class HomePageComponent extends BaseComponent {
         ...itineraryId,
       });
 
+      this.#addItineraryTile(formElement.querySelector("#location").value, itineraryId);
 
-      await Itinerary.saveItinerary(obj);
-      this.#addItineraryTile(formElement.querySelector("#location").value);
 
       // Remove the form
       formElement.remove();
@@ -89,21 +104,63 @@ export class HomePageComponent extends BaseComponent {
       });
   }
 
-  #addItineraryTile(title) {
+  #addItineraryTile(title, id) {
     // Create a new tile
     const newTile = document.createElement("div");
-    newTile.classList.add("tile");
-    newTile.textContent = title;
+    newTile.classList.add("tile", "itineraryTile")
 
-    // // Add navigation functionality to the tile
-    // newTile.onclick = () => {
-    //   // Update the URL without reloading the page
-    //   const pageURL = `/activity/${encodeURIComponent(title)}`;
-    //   history.pushState({}, "", pageURL);
 
-    //   // Let the RouterComponent handle rendering the new page
-    //   dispatchEvent(new PopStateEvent("popstate"));
-    // };
+    const headerElement = document.createElement("h2");
+    headerElement.classList.add("tileHeader");
+    headerElement.innerHTML = title;
+
+    const buttonGroup = document.createElement("div");
+    buttonGroup.classList.add("buttonGroup");
+
+    const deleteButton = document.createElement("button");
+    deleteButton.id = "deleteItinerary";
+    deleteButton.classList.add("icon-button");
+
+    const iconElement = document.createElement("i");
+    iconElement.classList.add("fas");
+    iconElement.classList.add("fa-trash-alt");
+
+    const hiddenIdField = document.createElement("input");
+    hiddenIdField.type = "hidden";
+    hiddenIdField.id = "itineraryID";
+    hiddenIdField.value = id;
+
+    deleteButton.appendChild(iconElement);
+
+    buttonGroup.appendChild(deleteButton);
+
+    newTile.appendChild(headerElement);
+    newTile.appendChild(buttonGroup);
+    newTile.appendChild(hiddenIdField);
+
+    deleteButton.onclick = (e) => {
+      this.#itineraryDB.deleteActivity(id)
+      .then((message) => {
+        console.log(message);
+      })
+      .catch((error) => {
+        console.error("Failed to delete itinerary from ItineraryDB:", error);
+      });
+
+      newTile.remove();
+
+      e.stopPropagation();
+
+    }
+
+    // Add navigation functionality to the tile
+      newTile.onclick = () => {
+        const itineraryId = { id: id }
+        const serializedParams = serializeQueryParams(itineraryId);
+        const url = constructURLFromPath('/itinerary', serializedParams);
+
+        navigate(url);
+      };
 
     // Append the new tile to the container
     this.#container.appendChild(newTile);
@@ -113,7 +170,7 @@ export class HomePageComponent extends BaseComponent {
     try {
       const itineraries = await this.#itineraryDB.getAllActivity();
       itineraries.forEach(data => {
-        this.#addItineraryTile(data.location)
+        this.#addItineraryTile(data.location, data.id)
       });
     } catch (error) {
       console.error('failed to fetch itineraries from ItineraryDB:', error);

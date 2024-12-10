@@ -51,26 +51,36 @@ export class ItineraryFormComponent extends BaseComponent {
         <form>
           <h2>Create New Itinerary</h2>
 
-          <label for="location">Name of Trip:</label>
+          <label for="location">Name of Trip:
+            <span style="color:red">*</span>
+          </label>
           <input type="text" id="location" name="location" placeholder="Enter name" required>
 
           <label for="picture">Insert Picture:</label>
           <input type="file" id="picture" name="picture" accept="image/*">
 
-          <label for="start-location-container">Enter start location</label>
+          <label for="start-location-container">Enter start location:
+            <span style="color:red">*</span>
+          </label>
           <div id="start-location-container">
             <!-- Start location input can be added here -->
           </div>
 
-          <label for="end-location-container">Enter end location</label>
+          <label for="end-location-container">Enter end location:
+            <span style="color:red">*</span>
+          </label>
           <div id="end-location-container">
             <!-- End location input can be added here -->
           </div>
 
-          <label for="start-date">Start Date & Time:</label>
+          <label for="start-date">Start Date & Time:
+            <span style="color:red">*</span>
+          </label>
           <input type="datetime-local" id="start-date" name="startDate" required>
 
-          <label for="end-date">End Date & Time:</label>
+          <label for="end-date">End Date & Time:
+            <span style="color:red">*</span>
+          </label>
           <input type="datetime-local" id="end-date" name="endDate" required>
 
           <label for="description">Description:</label>
