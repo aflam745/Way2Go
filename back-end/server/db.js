@@ -77,18 +77,90 @@ async function saveActivity(activity) {
   )
 }
 
-/** 
+/**
+  * @param {number} itineraryId - ID of an Itinerary Object
+  *
+  * Deletes the itinerary and its associated activities from the database.
+  * Also deletes the associated image file if it exists.
+  */
+async function deleteItinerary(itineraryId) {
+  const transaction = await db.transaction()
+  try {
+    // Find the itinerary by primary key
+    const itinerary = await itineraryModel.findByPk(itineraryId, { transaction })
+
+    if (!itinerary) {
+      throw new Error(`Itinerary with ID ${itineraryId} not found.`)
+    }
+
+    // If there is an imagePath, attempt to delete the image file
+    if (itinerary.imagePath) {
+      fs.unlink(itinerary.imagePath, (err) => {
+        if (err && err.code !== 'ENOENT') { // Ignore file not found errors
+          console.error(`Failed to delete image at ${itinerary.imagePath}:`, err)
+        }
+      })
+    }
+
+    // Delete all associated activities
+    await ActivityModel.destroy({
+      where: { itineraryId },
+      transaction
+    })
+
+    // Delete the itinerary
+    await itinerary.destroy({ transaction })
+
+    await transaction.commit()
+    console.log(`Itinerary with ID ${itineraryId} and its activities have been deleted.`)
+  } catch (error) {
+    // Rollback the transaction in case of error
+    await transaction.rollback()
+    console.error(`Failed to delete itinerary with ID ${itineraryId}:`, error)
+    throw error
+  }
+}
+
+/**
+  * @param {number} activityId - ID of an Activity Object
+  *
+  * Deletes the activity from the database.
+  */
+async function deleteActivity(activityId) {
+  const transaction = await db.transaction();
+
+  try {
+    // Find the activity by primary key
+    const activity = await ActivityModel.findByPk(activityId, { transaction })
+
+    if (!activity) {
+      throw new Error(`Activity with ID ${activityId} not found.`)
+    }
+
+    await activity.destroy({ transaction })
+
+    await transaction.commit()
+    console.log(`Activity with ID ${activityId} has been deleted.`)
+  } catch (error) {
+    // Rollback the transaction in case of error
+    await transaction.rollback()
+    console.error(`Failed to delete activity with ID ${activityId}:`, error)
+    throw error
+  }
+}
+
+/**
   * @param {string} id
   *
   * Retrieves the itinerary as a JSON string from the database
   */
 async function loadItinerary(id) {
 
-  /** 
-    * WARNING: This query may blow up and 
+  /**
+    * WARNING: This query may blow up and
     * return the wrong type I don't know
     * if it returns the right thing yet
-    
+
     * @type {ItineraryResult}
     */
   const result = await db.query(`
@@ -141,7 +213,7 @@ async function loadItineraryWithActivities(id) {
 /**
   * WARNING: This function is untested may blow up
   *
-  * @param {Activity[]} activites 
+  * @param {Activity[]} activites
   */
 async function saveActivities(activites) {
   const date = new Date(); // date for createdAt/updatedAt fields
@@ -157,3 +229,5 @@ exports.saveItinerary = saveItinerary
 exports.saveActivity = saveActivity
 exports.saveActivities = saveActivities
 exports.loadItineraryWithActivities = loadItineraryWithActivities
+exports.deleteItinerary = deleteItinerary
+exports.deleteActivity = deleteActivity

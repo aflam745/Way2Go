@@ -110,7 +110,6 @@ export class HomePageComponent extends BaseComponent {
     const newTile = document.createElement("div");
     newTile.classList.add("tile", "itineraryTile")
 
-
     const headerElement = document.createElement("h2");
     headerElement.classList.add("tileHeader");
     headerElement.innerHTML = title;
@@ -139,7 +138,7 @@ export class HomePageComponent extends BaseComponent {
     newTile.appendChild(buttonGroup);
     newTile.appendChild(hiddenIdField);
 
-    deleteButton.onclick = (e) => {
+    deleteButton.onclick = async (e) => {
       this.#itineraryDB.deleteActivity(id)
       .then((message) => {
         console.log(message);
@@ -148,10 +147,15 @@ export class HomePageComponent extends BaseComponent {
         console.error("Failed to delete itinerary from ItineraryDB:", error);
       });
 
-      newTile.remove();
-
       e.stopPropagation();
 
+      newTile.remove();
+
+      //Delete itinerary from database
+      const res = await fetch(`http://localhost:4000/deleteItinerary/${id}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) console.error("Failed to delete itinerary from database.");
     }
 
     // Add navigation functionality to the tile
