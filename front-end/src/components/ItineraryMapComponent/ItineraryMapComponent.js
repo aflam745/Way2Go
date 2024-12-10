@@ -1,19 +1,57 @@
+import { EventHub } from "../../eventhub/EventHub.js";
+import { Events } from "../../eventhub/Events.js";
 import { BaseComponent } from "../BaseComponent/BaseComponent.js";
+import { ActivityDatabase } from "../../Models/ActivityDatabase.js";
+import { getQueryParams } from "../../lib/router.js";
 
 export class MapComponent extends BaseComponent {
     #container = null;
+    #activityDB;
+    #itineraryDB;
+    #activities = null;
+    #itinerary = null;
+    #day = 1;
 
-    constructor(activities, geometry=null) {
+    constructor() {
         super();
-        this.activities = activities;
-        this.geometry = geometry;
         this.map = null;
+        this.#activityDB = new ActivityDatabase('ActivityDB');
+        this.#itineraryDB = new ActivityDatabase('ItineraryDB');
+        EventHub.getInstance().subscribe(Events.ChangeDay, day => {
+            this.#container = null;
+            this.#day = day;
+            this.render();
+
+        })
     }
 
-    render() {
+    async render() {
         this.#createContainer();
-        this.#loadLeafletResources(() => this.#initializeMap());
+        await this.#fetchItinerary();
+        const activities = await this.#getActivitiesOnDay();
+        this.#loadLeafletResources(() => this.#initializeMap(activities));
         return this.#container;
+    }
+
+    async #getActivitiesOnDay() {
+        const activities = await this.#fetchActivities();
+        return activities.filter(activity => activity.day.includes(this.#day));
+    }
+
+    async #fetchActivities() {
+        try {
+            return await this.#activityDB.getAllActivity();
+        } catch (error) {
+            console.log('Failed to fetch activities from ActivityDB:', error);
+        }
+    }
+
+    async #fetchItinerary() {
+        try {
+            this.#itinerary = await this.#itineraryDB.getActivity(getQueryParams(window.location).id);
+        } catch (error) {
+            console.log('Failed to fetch activities from ActivityDB:', error);
+        }
     }
 
     removeSelf() {
@@ -48,13 +86,17 @@ export class MapComponent extends BaseComponent {
         document.head.appendChild(mapStyles);
     }
 
-    #initializeMap() {      
+    #initializeMap(activities) {   
+        if (activities.length === 0) {
+            this.map = document.createElement('div').innerHTML = '';
+            return;
+        }   
         this.map = L.map(this.#container, { zoomSnap: 0.1});
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors',
         }).addTo(this.map);
 
-        const markers = this.activities.map((activity, index) => {
+        const markers = activities.map((activity, index) => {
             const originalTooltipText = `${index + 1}. ${activity.name}`;
 
             // marker images stored locally to avoid marker render issue

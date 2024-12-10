@@ -44,7 +44,7 @@ export class RouterComponent extends BaseComponent {
     * Renders based on the URL's pathname
     * @param {Location | URL} url 
     */
-  render(url) {
+  async render(url) {
     // Match based on Regex?
 
     /** @type {BaseComponent} */
@@ -54,12 +54,12 @@ export class RouterComponent extends BaseComponent {
     if (this.layout != null) {
       this.conatiner.replaceChildren(
         this.layout.render(
-          component.render()
+          await component.render()
         )
       )
     } else {
       this.conatiner.replaceChildren(
-        component.render()
+        await component.render()
       )
     }
 

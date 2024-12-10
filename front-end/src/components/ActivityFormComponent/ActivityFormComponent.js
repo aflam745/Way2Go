@@ -459,7 +459,9 @@ export class ActivityFormComponent extends BaseComponent {
 
             <input type="hidden" id="id" name="id">
 
-            <label for="name">Activity name:</label>
+            <label for="name">Activity name:
+                <span style="color:red">*</span>
+            </label>
             <input type="text" id="name" name="name" placeholder="Enter activity name" required>
             <br>
 
@@ -470,13 +472,17 @@ export class ActivityFormComponent extends BaseComponent {
             <input type="datetime-local" id="end-time" name="latestEndTime">
             <br>
 
-            <label for="duration-hours">Duration:</label>
+            <label for="duration-hours">Duration:
+                <span style="color:red">*</span>
+            </label>
             <input type="number" id="duration-hours" name="durationHours" placeholder="Hours" min="0" required><a>h</a>
             <input type="number" id="duration-minutes" name="durationMinutes" placeholder="Minutes" min="0" max="59" required><a>m</a>
             <button type="button" id="set-full-duration" class="secondary-button">Activity spans the full time interval</button>
             <br>
 
-            <label for="location-search">Address:</label>
+            <label for="location-search">Address:
+                <span style="color:red">*</span>
+            </label>
             <div id="location-search-container"></div>
             <br>
 
@@ -653,7 +659,7 @@ export class ActivityFormComponent extends BaseComponent {
                 const addressInput = document.getElementById('searchInput');
                 if (addressInput) {
                     // edit the address search bar
-                    EventHub.getInstance().publish(Events.EditAddress, {
+                    this.#locationSearchComponent.autofillAddressField({
                         lon: data.lon,
                         lat: data.lat,
                         address: data.address

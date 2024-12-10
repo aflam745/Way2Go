@@ -39,6 +39,8 @@ export class ActivityItemComponent extends BaseComponent {
     this.#createActivityTitle();
     this.#createActivityDetails(this.activityData);
 
+    this.#hideEditDeleteButtons();
+
     return this.#container;
   }
 
@@ -112,5 +114,19 @@ export class ActivityItemComponent extends BaseComponent {
     const hub = EventHub.getInstance();
 
     hub.publish(Events.EditActivity, { activityData });
+  }
+
+  #hideEditDeleteButtons(){
+    const currentURL = window.location.href;
+
+    const editButton = this.#container.querySelector(".editActivity");
+    const deleteButton = this.#container.querySelector(".deleteActivity")
+    if (currentURL.indexOf("editItinerary") !== -1){
+      editButton.style.display = 'block';
+      deleteButton.style.display = 'block';
+    } else {
+      editButton.style.display = 'none';
+      deleteButton.style.display = 'none';
+    }
   }
 }
