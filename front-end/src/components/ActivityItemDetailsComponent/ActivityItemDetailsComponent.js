@@ -17,6 +17,7 @@ export class ActivityItemDetailsComponent extends BaseComponent {
 
     #createContainer() {
         this.#container = document.createElement('div');
+        this.#container.classList.add('activity-details-section');
         this.#container.id = 'activityItemDetails';
         this.#container.innerHTML = this.#getTemplate();
     }
@@ -87,7 +88,7 @@ export class ActivityItemDetailsComponent extends BaseComponent {
         }
         console.log(formattedString);
         console.log(formattedString || "N/A");
-        return formattedString; 
+        return formattedString;
     }
 
     #displayData() {

@@ -11,8 +11,24 @@ export class ActivityItemComponent extends BaseComponent {
   constructor(activityData = {}) {
     super();
     this.loadCSS('ActivityItemComponent');
+    this.#loadFontAwesome();
     this.activityData = activityData;
     this.#activityDB = new ActivityDatabase('ActivityDB');
+  }
+
+  #loadFontAwesome() {
+    if (document.querySelector('link[href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"]')) {
+      // Font Awesome is already loaded
+      return;
+    }
+
+    const faLink = document.createElement('link');
+    faLink.rel = 'stylesheet';
+    faLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
+    faLink.integrity = 'sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==';
+    faLink.crossOrigin = 'anonymous';
+    faLink.referrerPolicy = 'no-referrer';
+    document.head.appendChild(faLink);
   }
 
   render() {
@@ -36,8 +52,12 @@ export class ActivityItemComponent extends BaseComponent {
     this.#container.innerHTML = `
     <h3 class="activityTitle"></h3>
     <div class="button-group">
-      <button class="editActivity">Edit</button>
-      <button class="deleteActivity">Delete</button>
+      <button class="editActivity icon-button">
+        <i class="fas fa-edit" aria-hidden="true"></i>
+      </button>
+      <button class="deleteActivity icon-button">
+        <i class="fas fa-trash-alt" aria-hidden="true"></i>
+      </button>
     </div>
     <div id="activityDetails" class="activity-item-details"></div>
     `
