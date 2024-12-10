@@ -2,6 +2,7 @@ import { EventHub } from "../../eventhub/EventHub.js";
 import { Events } from "../../eventhub/Events.js";
 import { BaseComponent } from "../BaseComponent/BaseComponent.js";
 import { ActivityDatabase } from "../../Models/ActivityDatabase.js";
+import { getQueryParams } from "../../lib/router.js";
 
 export class MapComponent extends BaseComponent {
     #container = null;
@@ -47,7 +48,7 @@ export class MapComponent extends BaseComponent {
 
     async #fetchItinerary() {
         try {
-            this.#itinerary = await this.#itineraryDB.getActivity(window.location).id;
+            this.#itinerary = await this.#itineraryDB.getActivity(getQueryParams(window.location).id);
         } catch (error) {
             console.log('Failed to fetch activities from ActivityDB:', error);
         }

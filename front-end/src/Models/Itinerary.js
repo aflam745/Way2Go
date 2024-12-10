@@ -434,18 +434,20 @@ export default class Itinerary {
         if (!res.ok) console.error("Failed to save activities to database.");
     }
 
-    static async fetchItinerary(itineraryID) {
+    static async fetchItineraryAndActivityData(itineraryID) {
         try {
-            const response = await fetch('http://localhost:4000/loadItinerary', {
-                method: 'POST',
+            const response = await fetch(`http://localhost:4000/loadCompleteItinerary/${itineraryID}`, {
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                },
-                body: itineraryID
+                }
             });
 
             if (response.ok) {
                 console.log("Received itinerary!");
+                const data = await response.json();
+                console.log('data', data);
+                return data;
             } else {
                 console.error("Failed to fetch itinerary:", response.status, response.statusText);
             }
@@ -455,4 +457,28 @@ export default class Itinerary {
         
     }
 
+    static async saveItinerary(itinerary) {
+        try {
+            const response = await fetch('http://localhost:4000/saveItinerary', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(itinerary)
+            });
+
+            if (response.ok) {
+                console.log("Saved itinerary!");
+            } else {
+                console.error("Failed to save itinerary:", response.status, response.statusText);
+            }
+        } catch (e) {
+            console.error("Error while saving itinerary:", e);
+        }
+    }
+
+    
+
+
 }
+

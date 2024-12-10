@@ -3,6 +3,7 @@ import { ActivityItemComponent } from "../ActivityItemComponent/ActivityItemComp
 import { ActivityDatabase } from "../../Models/ActivityDatabase.js";
 import { EventHub } from "../../eventhub/EventHub.js";
 import { Events } from "../../eventhub/Events.js";
+import { getQueryParams } from "../../lib/router.js";
 
 export class ItineraryActivityListComponent extends BaseComponent {
     /** 
@@ -74,7 +75,7 @@ export class ItineraryActivityListComponent extends BaseComponent {
 
     async #fetchItinerary() {
         try {
-            this.#itinerary = await this.#itineraryDB.getActivity(window.location).id;
+            this.#itinerary = await this.#itineraryDB.getActivity(getQueryParams(window.location).id);
         } catch (error) {
             console.log('Failed to fetch activities from ActivityDB:', error);
         }
@@ -103,7 +104,7 @@ export class ItineraryActivityListComponent extends BaseComponent {
 
         }
         daySelector.addEventListener("change", (event) => {
-            const day = event.target.value;
+            const day = parseInt(event.target.value, 10);
             this.#displayActivities(day);
             EventHub.getInstance().publish(Events.ChangeDay, day);
         });
@@ -119,6 +120,7 @@ export class ItineraryActivityListComponent extends BaseComponent {
     }
 
     async #displayActivities(day) {
+
         const ul = document.createElement('ul');
         const activities = await this.#getActivitiesToDisplay(day);
         if (day === 1) {
@@ -129,7 +131,7 @@ export class ItineraryActivityListComponent extends BaseComponent {
         // add in code to check if day is first or last and add starting and ending details accordingly
         activities.forEach(activity => {
             const li = document.createElement('li');
-            li.innerHTML = new ActivityItemComponent(activity);
+            li.appendChild(new ActivityItemComponent(activity).render());
             ul.appendChild(li);
         });
         if (day === this.#calculateDays()) {
@@ -138,10 +140,10 @@ export class ItineraryActivityListComponent extends BaseComponent {
             ul.appendChild(endDetails);
         }
         if (ul.innerHTML === "") {
-            ul.innerHTML = `<h2>No activities on this day.</h2>`;
+            ul.innerHTML = `<h2>No activities on this day. ${day}</h2>`;
         }
         const listContainer = this.#container.querySelector("#activityListContainer");
-        listContainer.innerHTML = ul;
+        listContainer.replaceChildren(ul);
     }
 
     async #getActivitiesToDisplay(day) {

@@ -11,7 +11,6 @@ export default class ItineraryHeaderComponent extends BaseComponent {
     constructor() {
         super();
         this.loadCSS("ItineraryHeaderComponent");
-        // this.itinerary = Itinerary.getInstance();
         this.#itineraryDB = new ActivityDatabase('ItineraryDB');
     }
 
@@ -24,17 +23,17 @@ export default class ItineraryHeaderComponent extends BaseComponent {
     #createHeader() {
         // trip name
         const tripNameElement = document.createElement('h1');
-        tripNameElement.textContent = this.itinerary.location;
+        tripNameElement.textContent = this.#itinerary.location;
         this.#container.appendChild(tripNameElement);
 
         // image
-        if (this.itinerary.picture instanceof Blob) {
-            const imageElement = document.createElement('img');
-            imageElement.src = this.itinerary.picture;
-            imageElement.alt = "Image";
-            imageElement.classList.add('itinerary-image')
-            this.#container.appendChild(imageElement);
-        }
+        // if (this.#itinerary.picture instanceof Blob) {
+        //     const imageElement = document.createElement('img');
+        //     imageElement.src = this.#itinerary.picture;
+        //     imageElement.alt = "Image";
+        //     imageElement.classList.add('itinerary-image')
+        //     this.#container.appendChild(imageElement);
+        // }
 
         // start and end dates
         const formattedStartDate = new Date(this.#itinerary.startDate).toLocaleString('en-us');
@@ -45,8 +44,8 @@ export default class ItineraryHeaderComponent extends BaseComponent {
         this.#container.appendChild(timeframeElement);
 
         // start and end locations
-        const startLocation = this.itinerary.startLocation.address;
-        const endLocation = this.itinerary.endLocation.address;
+        const startLocation = this.#itinerary.startLocation.address;
+        const endLocation = this.#itinerary.endLocation.address;
 
         const startLocationElement = document.createElement('h3');
         startLocationElement.textContent = `Starting at ${startLocation}`;
@@ -56,19 +55,15 @@ export default class ItineraryHeaderComponent extends BaseComponent {
         endLocationElement.textContent = `Ending at ${endLocation}`;
         this.#container.appendChild(endLocationElement);
 
-        // transportation
-        const transportationElement = document.createElement('h3');
-        transportationElement.textContent = `Transportation: ${this.itinerary.transportation}`;
-        this.#container.appendChild(transportationElement);
-
         // description
         const descriptionElement = document.createElement('p');
-        descriptionElement.textContent = this.itinerary.description;
+        descriptionElement.textContent = this.#itinerary.description;
         this.#container.appendChild(descriptionElement);
     }
 
-    render() {
+    async render() {
         this.#initContainer();
+        await this.#fetchItinerary();
         this.#createHeader();
         return this.#container;
     }

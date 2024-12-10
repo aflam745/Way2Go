@@ -1,6 +1,8 @@
 const fs = require('node:fs')
+const { Sequelize, DataTypes, QueryTypes } = require('sequelize')
+const sqlite3 = require('sqlite3')
 
-const { Sequelize, DataTypes } = require('sequelize')
+exports.db = new sqlite3.Database('records.db')
 
 /**
   * @typedef {Object} Itinerary
@@ -26,15 +28,32 @@ const { Sequelize, DataTypes } = require('sequelize')
 const db = new Sequelize({ dialect: 'sqlite', storage: 'records.db' })
 
 const itineraryModel = db.define('itinerary', {
-  id: { primaryKey: true, type: DataTypes.STRING },
-  data: {allowNull: false, type: DataTypes.STRING},
-  imagePath: DataTypes.STRING
-})
+    id: { primaryKey: true, type: DataTypes.STRING },
+    data: { allowNull: false, type: DataTypes.STRING },
+    imagePath: DataTypes.STRING,
+}, { freezeTableName: true }
+)
 
 const ActivityModel = db.define('activity', {
-  id: { type: DataTypes.STRING, primaryKey: true },
-  data: {allowNull: false, type: DataTypes.STRING}
-})
+    id: { type: DataTypes.STRING, primaryKey: true },
+    itineraryId: { type: DataTypes.STRING, allowNull: false },
+    data: { allowNull: false, type: DataTypes.STRING }
+}, { freezeTableName: true }
+)
+
+
+async function initializeDatabase() {
+    try {
+        await db.authenticate();
+        console.log('Connection established.');
+        await db.sync();
+        console.log('Database synchronized.');
+    } catch (error) {
+        console.error('Error initializing the database:', error);
+    }
+}
+
+initializeDatabase()
 
 
 /**
@@ -44,17 +63,18 @@ const ActivityModel = db.define('activity', {
   * Saves the itinerary as a JSON String to the database
   */
 async function saveItinerary(itinerary, imagePath) {
-  return await db.query(
-    `insert into itinerary values(?, json(?), ?)`,
-    { raw: true, replacements: [itinerary.id, JSON.stringify(itinerary), imagePath ?? null] }
-  )
+    console.log("here with itinerary:", itinerary)
+    return await db.query(
+        `insert into itinerary values(?, json(?), ?, ?, ?)`,
+        { raw: true, replacements: [itinerary.id, JSON.stringify(itinerary), imagePath ?? null, new Date(), new Date()], type: QueryTypes.INSERT }
+    )
 }
 
 async function saveActivity(activity) {
-  return await db.query(
-    `insert into activity values(?, json(?))`,
-    {raw: true, replacements: [activity.id, JSON.stringify(activity)]}
-  )
+    return await db.query(
+        `insert into activity values(?, json(?), ?, ?)`,
+        { raw: true, replacements: [activity.id, JSON.stringify(activity), null, new Date(), new Date()], type: QueryTypes.INSERT }
+    )
 }
 
 /** 
@@ -64,33 +84,96 @@ async function saveActivity(activity) {
   */
 async function loadItinerary(id) {
 
-  /** 
-    * WARNING: This query may blow up and 
-    * return the wrong type I don't know
-    * if it returns the right thing yet
-    *
-    * @type {ItineraryResult}
-    */
-  const result = await db.query(`
+    /** 
+      * WARNING: This query may blow up and 
+      * return the wrong type I don't know
+      * if it returns the right thing yet
+      
+      * @type {ItineraryResult}
+      */
+    const result = await db.query(`
     select data, imagePath from itinerary where id = ? limit 1
-  `, { raw: true, replacements: { id: id } })
+  `, { raw: true, replacements: { id: id }, type: QueryTypes.SELECT })
 
-  const path = result.imagePath
+    const path = result.imagePath
 
-  if (path != null) {
-    // WARNING: I hope this doesn't throw
-    const file = fs.readFileSync(path)
+    if (path != null) {
+        // WARNING: I hope this doesn't throw
+        const file = fs.readFileSync(path)
 
-    return { file, itinerary: result.data }
-  }
+        return { file, itinerary: result.data }
+    }
 
-  return { itinerary: result.data }
+    return { itinerary: result.data }
+}
+
+// WARNING: I do not know the complete shapre of what this will return
+async function loadItineraryWithActivities(id) {
+    let tx;
+    try {
+        tx = await db.transaction();
+
+        // Retrieve itinerary
+        const itineraryResult = await db.query(
+            `select data, imagePath from itinerary where id = ? limit 1`,
+            {
+                raw: true,
+                replacements: [id], // Use positional replacement
+                transaction: tx,
+                type: QueryTypes.SELECT,
+            }
+        );
+
+        // Extract the first result, if it exists
+        const itinerary = itineraryResult.length > 0 ? itineraryResult[0] : null;
+
+        if (!itinerary) {
+            throw new Error(`No itinerary found with id: ${id}`);
+        }
+
+        // Retrieve activities for the itinerary
+        const activityResults = await db.query(
+            `select data from activity where itineraryId = ?`,
+            {
+                raw: true,
+                replacements: [id], // Use positional replacement
+                transaction: tx,
+                type: QueryTypes.SELECT,
+            }
+        );
+
+        // Commit the transaction
+        await tx.commit();
+
+        console.log(itinerary);
+        console.log(activityResults);
+
+        return { itinerary, activities: activityResults };
+    } catch (error) {
+        if (tx) await tx.rollback();
+        console.error('Error loading itinerary with activities:', error);
+        throw error;
+    }
 }
 
 
-exports.db = new sqlite3('records.db')
+
+/**
+  * WARNING: This function is untested may blow up
+  *
+  * @param {Activity[]} activites 
+  */
+async function saveActivities(activites) {
+    const date = new Date(); // date for createdAt/updatedAt fields
+    const a = activites.map(arr => [a.id, a.itineraryId, JSON.stringify(a)], date, date)
+    const result = await db.query(`insert into activity values ${data.map(a => '(?)').join(',')}`, {
+        replacements: a
+    })
+    return
+}
+
 exports.loadItinerary = loadItinerary
 exports.saveItinerary = saveItinerary
 exports.saveActivity = saveActivity
-
-
+exports.saveActivities = saveActivities
+exports.loadItineraryWithActivities = loadItineraryWithActivities
