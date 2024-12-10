@@ -64,6 +64,11 @@ form button {
   font-size: 16px;
 }
 
+dialog {
+  border: 0px;
+  border-radius: 12px;
+}
+
 #add-itinerary {
   background-color: #28a745;
   color: white;
