@@ -2,6 +2,7 @@ import { BaseComponent } from "../BaseComponent/BaseComponent.js";
 import { ItineraryFormComponent } from "../ItineraryFormComponent/ItineraryFormComponent.js";
 import { constructURLFromPath, navigate, serializeQueryParams } from "../../lib/router.js";
 import { ActivityDatabase } from "../../Models/ActivityDatabase.js";
+import Itinerary from "../../Models/Itinerary.js";
 
 export class HomePageComponent extends BaseComponent {
   #container = null;
@@ -43,29 +44,30 @@ export class HomePageComponent extends BaseComponent {
     this.#container.appendChild(formElement);
 
     // Attach event listener to the form submission
-    formElement.querySelector("form").onsubmit = (event) => {
+    formElement.querySelector("form").onsubmit = async (event) => {
       event.preventDefault(); // Prevent default form submission behavior
 
       const fd = new FormData(event.target)
       const locationEntries = this.#formComponent.getLocationEntries();
-      console.log(locationEntries);
 
       const obj = Object.fromEntries(fd);
       obj["startLocation"] = locationEntries.startLocationEntry;
       obj["endLocation"] = locationEntries.endLocationEntry;
-
-      console.log(obj);
 
       const currentTime = Date.now();
       const randThreeDigitInt = (Math.floor((Math.random() * 900) + 100)).toString();
       const id = currentTime + randThreeDigitInt;
       const itineraryId = { id: id };
 
+      obj["id"] = id;
+
       this.#addItineraryToIndexedDB({
         ...obj,
         ...itineraryId,
       });
 
+
+      await Itinerary.saveItinerary(obj);
       this.#addItineraryTile(formElement.querySelector("#location").value);
 
       // Remove the form
