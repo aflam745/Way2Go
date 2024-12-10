@@ -28,16 +28,16 @@ exports.db = new sqlite3.Database('records.db')
 const db = new Sequelize({ dialect: 'sqlite', storage: 'records.db' })
 
 const itineraryModel = db.define('itinerary', {
-  id: { primaryKey: true, type: DataTypes.STRING },
-  data: { allowNull: false, type: DataTypes.STRING },
-  imagePath: DataTypes.STRING,
+    id: { primaryKey: true, type: DataTypes.STRING },
+    data: { allowNull: false, type: DataTypes.STRING },
+    imagePath: DataTypes.STRING,
 }, { freezeTableName: true }
 )
 
 const ActivityModel = db.define('activity', {
-  id: { type: DataTypes.STRING, primaryKey: true },
-  itineraryId: { type: DataTypes.STRING, allowNull: false },
-  data: { allowNull: false, type: DataTypes.STRING }
+    id: { type: DataTypes.STRING, primaryKey: true },
+    itineraryId: { type: DataTypes.STRING, allowNull: false },
+    data: { allowNull: false, type: DataTypes.STRING }
 }, { freezeTableName: true }
 )
 
@@ -64,17 +64,17 @@ initializeDatabase()
   */
 async function saveItinerary(itinerary, imagePath) {
     console.log("here with itinerary:", itinerary)
-  return await db.query(
-    `insert into itinerary values(?, json(?), ?, ?, ?)`,
-      { raw: true, replacements: [itinerary.id, JSON.stringify(itinerary), imagePath ?? null, new Date(), new Date()], type: QueryTypes.INSERT }
-  )
+    return await db.query(
+        `insert into itinerary values(?, json(?), ?, ?, ?)`,
+        { raw: true, replacements: [itinerary.id, JSON.stringify(itinerary), imagePath ?? null, new Date(), new Date()], type: QueryTypes.INSERT }
+    )
 }
 
 async function saveActivity(activity) {
-  return await db.query(
-    `insert into activity values(?, json(?), ?, ?)`,
-      { raw: true, replacements: [activity.id, JSON.stringify(activity), null, new Date(), new Date()], type: QueryTypes.INSERT }
-  )
+    return await db.query(
+        `insert into activity values(?, json(?), ?, ?)`,
+        { raw: true, replacements: [activity.id, JSON.stringify(activity), null, new Date(), new Date()], type: QueryTypes.INSERT }
+    )
 }
 
 /**
@@ -156,58 +156,78 @@ async function deleteActivity(activityId) {
   */
 async function loadItinerary(id) {
 
-  /**
-    * WARNING: This query may blow up and
-    * return the wrong type I don't know
-    * if it returns the right thing yet
 
-    * @type {ItineraryResult}
-    */
-  const result = await db.query(`
+    /** 
+      * WARNING: This query may blow up and 
+      * return the wrong type I don't know
+      * if it returns the right thing yet
+      
+      * @type {ItineraryResult}
+      */
+    const result = await db.query(`
     select data, imagePath from itinerary where id = ? limit 1
   `, { raw: true, replacements: { id: id }, type: QueryTypes.SELECT })
 
-  const path = result.imagePath
+    const path = result.imagePath
+    if (path != null) {
+        // WARNING: I hope this doesn't throw
+        const file = fs.readFileSync(path)
 
-  if (path != null) {
-    // WARNING: I hope this doesn't throw
-    const file = fs.readFileSync(path)
+        return { file, itinerary: result.data }
+    }
 
-    return { file, itinerary: result.data }
-  }
-
-  return { itinerary: result.data }
+    return { itinerary: result.data }
 }
 
 // WARNING: I do not know the complete shapre of what this will return
 async function loadItineraryWithActivities(id) {
-  // TODO: nest r1 and r2?
-  const tx = await db.transaction()
+    let tx;
+    try {
+        tx = await db.transaction();
 
-  const r1 = await db.query(
-    `select data, imagePath from itinerary where id = ? limit 1`,
-    {
-      raw: true,
-      replacements: { id: id },
-      transaction: tx,
-      type: QueryTypes.SELECT
+        // Retrieve itinerary
+        const itineraryResult = await db.query(
+            `select data, imagePath from itinerary where id = ? limit 1`,
+            {
+                raw: true,
+                replacements: [id], // Use positional replacement
+                transaction: tx,
+                type: QueryTypes.SELECT,
+            }
+        );
+
+        // Extract the first result, if it exists
+        const itinerary = itineraryResult.length > 0 ? itineraryResult[0] : null;
+
+        if (!itinerary) {
+            throw new Error(`No itinerary found with id: ${id}`);
+        }
+
+        // Retrieve activities for the itinerary
+        const activityResults = await db.query(
+            `select data from activity where itineraryId = ?`,
+            {
+                raw: true,
+                replacements: [id], // Use positional replacement
+                transaction: tx,
+                type: QueryTypes.SELECT,
+            }
+        );
+
+        // Commit the transaction
+        await tx.commit();
+
+        console.log(itinerary);
+        console.log(activityResults);
+
+        return { itinerary, activities: activityResults };
+    } catch (error) {
+        if (tx) await tx.rollback();
+        console.error('Error loading itinerary with activities:', error);
+        throw error;
     }
-  )
-
-  const r2 = await db.query(
-    `select data from activity where id = ?`,
-    {
-      raw: true,
-      replacements: { id: id },
-      transaction: tx,
-      type: QueryTypes.SELECT
-    }
-  )
-
-  tx.commit()
-
-  return { r1, r2 }
 }
+
 
 
 /**
@@ -223,6 +243,7 @@ async function saveActivities(activites) {
   })
   return
 }
+
 
 exports.loadItinerary = loadItinerary
 exports.saveItinerary = saveItinerary

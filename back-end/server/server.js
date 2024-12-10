@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
+
 const { saveItinerary, saveActivities, loadItineraryWithActivities, deleteActivity, deleteItinerary } = require('./db');
+
 require('dotenv').config();
 
 const fetch = (...args) =>
@@ -33,7 +35,7 @@ app.post('/getDirections', async (req, res) => {
 
 });
 
-app.post('/optimize', async(req, res) => {
+app.post('/optimize', async (req, res) => {
     const body = req.body;
     const response = await fetch(`https://api.openrouteservice.org/v2/directions/${body.transportation}/geojson`, {
         method: 'POST',
@@ -53,17 +55,17 @@ app.post('/optimize', async(req, res) => {
 })
 
 app.get('/loadItinerary', async (req, res) => {
-  const body = req.body
-  const id = JSON.parse(body)
-  try {
-    const result = await loadItinerary(id)
-    res.set('Content-Type: application/json')
-    res.send(result)
-    return
-  } catch (error) {
-    res.sendStatus(404)
-    return
-  }
+    const body = req.body
+    const id = JSON.parse(body)
+    try {
+        const result = await loadItinerary(id)
+        res.set('Content-Type: application/json')
+        res.send(result)
+        return
+    } catch (error) {
+        res.sendStatus(404)
+        return
+    }
 })
 
 app.post('/saveItinerary', async (req, res) => {

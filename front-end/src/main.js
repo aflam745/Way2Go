@@ -9,7 +9,7 @@ const app = document.getElementById('app');
 
 const routes = new Map([
   ['/', new HomePageComponent()],
-  ['/itinerary', new ItineraryPage()],
+//   ['/itinerary', new ItineraryPage()],
   ['/editItinerary', new ActivityPageComponent()]
 ])
 

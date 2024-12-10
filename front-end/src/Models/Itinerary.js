@@ -113,6 +113,18 @@ export default class Itinerary {
         return Itinerary.#instance;
     }
 
+    static async loadItineraryFromDB2(itineraryId) {
+        const res = await fetch("/loadItinerary", {
+            method: 'GET',
+            body: JSON.stringify(itineraryId)
+        });
+        if (!res.ok) {
+            console.error("Failed to load itinerary from database.");
+            return;
+        }
+        return res.json();
+    }
+
     addActivity(
         name,
         isHotelStay,
@@ -305,12 +317,12 @@ export default class Itinerary {
 
 
 
-    static async optimizeRoute() {
+    static async optimizeRoute(itineraryId) {
         const activityDatabase = new ActivityDatabase('ActivityDB');
         const itineraryDatabase = new ActivityDatabase('ItineraryDB');
 
         const activities = activityDatabase.getAllActivity();
-        const itinerary = itineraryDatabase.getItinerary();
+        const itinerary = itineraryDatabase.getActivity(itineraryId);
 
         if (activities.length >= 50) {
             alert("Too many activities!");
@@ -423,6 +435,29 @@ export default class Itinerary {
     }
 
 
+    static async fetchItineraryAndActivityData(itineraryID) {
+        try {
+            const response = await fetch(`http://localhost:4000/loadCompleteItinerary/${itineraryID}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (response.ok) {
+                console.log("Received itinerary!");
+                const data = await response.json();
+                console.log('data', data);
+                return data;
+            } else {
+                console.error("Failed to fetch itinerary:", response.status, response.statusText);
+            }
+        } catch (e) {
+            console.error("Error while fetching itinerary:", e);
+        }
+        
+    }
+
     static async saveItinerary(itinerary) {
         try {
             const response = await fetch('http://localhost:4000/saveItinerary', {
@@ -432,7 +467,6 @@ export default class Itinerary {
                 },
                 body: JSON.stringify(itinerary)
             });
-            
             if (response.ok) {
                 console.log("Saved itinerary!");
             } else {
@@ -442,6 +476,5 @@ export default class Itinerary {
             console.error("Error while saving itinerary:", e);
         }
     }
-
-
 }
+
