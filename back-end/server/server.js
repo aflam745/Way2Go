@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { saveItinerary, saveActivities, loadItineraryWithActivities } = require('./db');
+const { saveItinerary, saveActivities, loadItineraryWithActivities, deleteActivity, deleteItinerary } = require('./db');
 require('dotenv').config();
 
 const fetch = (...args) =>
@@ -100,6 +100,36 @@ app.post('/saveActivites', async (req, res) => {
   } catch (error) {
     res.sendStatus(404)
     return
+  }
+})
+
+app.delete('/deleteActivity/:id', async (req, res) => {
+  const activityId = req.params.id;
+
+  try {
+    const deleted = await deleteActivity(activityId);
+    if(deleted) {
+      res.status(200).json({ message: 'Activity deleted successfully' });
+    } else {
+      res.status(404).json({ message: 'Activity not found.' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while deleting the activity.'})
+  }
+})
+
+app.delete('/deleteItinerary/:id', async (req, res) => {
+  const itineraryId = req.params.id;
+
+  try {
+    const deleted = await deleteItinerary(itineraryId);
+    if(deleted) {
+      res.status(200).json({ message: 'Itinerary deleted successfully' });
+    } else {
+      res.status(404).json({ message: 'Itinerary not found.' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while deleting the itinerary.'})
   }
 })
 

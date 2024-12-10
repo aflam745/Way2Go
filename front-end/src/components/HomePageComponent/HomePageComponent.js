@@ -95,15 +95,62 @@ export class HomePageComponent extends BaseComponent {
     newTile.classList.add("tile");
     newTile.textContent = title;
 
-    // // Add navigation functionality to the tile
-    // newTile.onclick = () => {
-    //   // Update the URL without reloading the page
-    //   const pageURL = `/activity/${encodeURIComponent(title)}`;
-    //   history.pushState({}, "", pageURL);
+    const headerElement = document.createElement("h2");
+    headerElement.classList.add("tileHeader");
+    headerElement.innerHTML = title;
 
-    //   // Let the RouterComponent handle rendering the new page
-    //   dispatchEvent(new PopStateEvent("popstate"));
-    // };
+    const buttonGroup = document.createElement("div");
+    buttonGroup.classList.add("buttonGroup");
+
+    const deleteButton = document.createElement("button");
+    deleteButton.id = "deleteItinerary";
+    deleteButton.classList.add("icon-button");
+
+    const iconElement = document.createElement("i");
+    iconElement.classList.add("fas");
+    iconElement.classList.add("fa-trash-alt");
+
+    const hiddenIdField = document.createElement("input");
+    hiddenIdField.type = "hidden";
+    hiddenIdField.id = "itineraryID";
+    hiddenIdField.value = id;
+
+    deleteButton.appendChild(iconElement);
+
+    buttonGroup.appendChild(deleteButton);
+
+    newTile.appendChild(headerElement);
+    newTile.appendChild(buttonGroup);
+    newTile.appendChild(hiddenIdField);
+
+    deleteButton.onclick = async (e) => {
+      this.#itineraryDB.deleteActivity(id)
+      .then((message) => {
+        console.log(message);
+      })
+      .catch((error) => {
+        console.error("Failed to delete itinerary from ItineraryDB:", error);
+      });
+
+      e.stopPropagation();
+
+      newTile.remove();
+
+      //Delete itinerary from database
+      const res = await fetch(`http://localhost:4000/deleteItinerary/${id}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) console.error("Failed to delete itinerary from database.");
+    }
+
+    // Add navigation functionality to the tile
+      newTile.onclick = () => {
+        const itineraryId = { id: id }
+        const serializedParams = serializeQueryParams(itineraryId);
+        const url = constructURLFromPath('/itinerary', serializedParams);
+
+        navigate(url);
+      };
 
     // Append the new tile to the container
     this.#container.appendChild(newTile);
