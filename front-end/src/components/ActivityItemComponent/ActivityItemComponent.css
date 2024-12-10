@@ -4,9 +4,13 @@
 /* Task Item Container */
 .activity-item {
   display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "title buttons"
+    "details details";
   justify-content: space-between;
   align-items: center;
-  background-color: var(--bg-white);
+  background-color: #fff;
   padding: 15px;
   margin-bottom: 10px;
   border-radius: 8px;
@@ -15,12 +19,27 @@
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
   width: 100%;
   box-sizing: border-box;
-  grid-template: "title buttons" "details details";
+  cursor: pointer;
+}
+
+.activityTitle {
+  grid-area: title;
+  text-align: center;
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.button-group {
+  grid-area: buttons;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
 }
 
 /* Hover Effect for Task Items */
 .activity-item:hover {
-  background-color: var(--active-gray);
+  transform: scale(1.01);
   box-shadow: 0px 4px 8px var(--active-shadow);
 }
 
@@ -32,14 +51,6 @@
   width: 100%;
 }
 
-.deleteActivity {
-  background-color: var(--red);
-}
-
-.deleteActivity:hover {
-  background-color: var(--hover-red);
-}
-
 /* Task Details Styling */
 .activity-details {
   flex: 1;
@@ -48,6 +59,31 @@
 }
 
 .activity-item-details {
+  grid-area: details;
   display: none;
   padding-top: 10px;
+}
+
+.icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: grey;
+  font-size: 1.25rem;
+  padding: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.editActivity:hover {
+  color: green;
+  transform: scale(1.2);
+  transition: transform 0.2s, color 0.2s;
+}
+
+.deleteActivity:hover {
+  color: red;
+  transform: scale(1.2);
+  transition: transform 0.2s, color 0.2s;
 }
