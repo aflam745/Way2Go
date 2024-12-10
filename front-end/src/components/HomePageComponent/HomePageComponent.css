@@ -51,10 +51,6 @@ header h1 {
     padding: 10px;
 }
 
-.tile:hover {
-    transform: scale(1.05);
-}
-
 .tile {
   position: relative; /* Ensure the pseudo-element is positioned relative to the tile */
   transition: transform 0.3s ease;
@@ -62,6 +58,7 @@ header h1 {
 
 .tile:hover {
   transform: scale(1.03);
+  background-color: #f0f0f0;
 }
 
 .itineraryTile:hover::after {

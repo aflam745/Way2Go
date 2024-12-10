@@ -104,7 +104,6 @@ export class HomePageComponent extends BaseComponent {
   }
 
   #addItineraryTile(title, id) {
-    let deletedTile = false;
     // Create a new tile
     const newTile = document.createElement("div");
     newTile.classList.add("tile", "itineraryTile")
@@ -139,8 +138,6 @@ export class HomePageComponent extends BaseComponent {
     newTile.appendChild(hiddenIdField);
 
     deleteButton.onclick = (e) => {
-      deletedTile = true;
-
       this.#itineraryDB.deleteActivity(id)
       .then((message) => {
         console.log(message);
@@ -156,7 +153,6 @@ export class HomePageComponent extends BaseComponent {
     }
 
     // Add navigation functionality to the tile
-    if(!deletedTile){
       newTile.onclick = () => {
         const itineraryId = { id: id }
         const serializedParams = serializeQueryParams(itineraryId);
@@ -164,7 +160,6 @@ export class HomePageComponent extends BaseComponent {
 
         navigate(url);
       };
-    }
 
     // Append the new tile to the container
     this.#container.appendChild(newTile);
