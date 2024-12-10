@@ -511,6 +511,7 @@ export class ActivityFormComponent extends BaseComponent {
 
         clearActivityBtn.addEventListener('click', (e) => {
             e.preventDefault();
+            this.#changeSubmitTextToAdd();
             this.#clearInputs();
         });
 
@@ -641,6 +642,9 @@ export class ActivityFormComponent extends BaseComponent {
       * Sets the values on the form based on the values present in the activityData object
       */
     #fillFormEditActivity(activityData) {
+        // Update the button text to indicate edit mode
+        this.#changeSubmitTextToEdit();
+
         const data = activityData.activityData;
 
         for (let [key, val] of Object.entries(data)) {
@@ -688,9 +692,6 @@ export class ActivityFormComponent extends BaseComponent {
             if (hoursInput) hoursInput.value = data.durationHours || 0;
             if (minutesInput) minutesInput.value = data.durationMinutes || 0;
         }
-
-        // Update the button text to indicate edit mode
-        this.#changeSubmitTextToEdit();
     }
 
     #changeSubmitTextToEdit() {
