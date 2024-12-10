@@ -22,9 +22,11 @@ export class HomePageComponent extends BaseComponent {
     return this.#container;
   }
 
-  #createContainer() {
+#createContainer() {
     this.#container = document.createElement("div");
     this.#container.classList.add("container");
+
+    this.#addGoogleSignInButton();
 
     // Add the "plus" tile
     const addTile = document.createElement("div");
@@ -32,7 +34,8 @@ export class HomePageComponent extends BaseComponent {
     addTile.textContent = "+";
     addTile.onclick = () => this.#showForm();
     this.#container.appendChild(addTile);
-  }
+}
+
 
   #showForm() {
     // Remove any existing form
@@ -119,4 +122,66 @@ export class HomePageComponent extends BaseComponent {
       console.error('failed to fetch itineraries from ItineraryDB:', error);
     }
   }
+    #addGoogleSignInButton() {
+    // Create the div to hold the Google Sign-In button
+    const buttonDiv = document.createElement("div");
+    buttonDiv.id = "buttonDiv"; // This is where the Google button will be rendered
+    this.#container.appendChild(buttonDiv);
+
+    // Load the Google Sign-In button script
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.onload = () => {
+      // Initialize Google Sign-In after the script is loaded
+      google.accounts.id.initialize({
+        client_id: "418418924635-kjfhcv4k4q69e7enevjtoimpert3kt9f.apps.googleusercontent.com",
+        callback: this.#handleCredentialResponse
+      });
+
+      google.accounts.id.renderButton(
+        document.getElementById("buttonDiv"),
+        {
+          theme: "outline", // Customization attributes
+          size: "large",
+          type: "standard" 
+        }
+      );
+
+      google.accounts.id.prompt(); // Show the One Tap prompt (optional)
+    };
+    // Append the script to load the Google Sign-In client
+    document.body.appendChild(script);
+
+    // Style the button container to position it in the top-right
+    buttonDiv.style.position = "absolute";
+    buttonDiv.style.top = "10px";
+    buttonDiv.style.right = "10px";
+  }
+
+  // Handle the response from Google Sign-In
+#handleCredentialResponse(response) {
+  const id_token = response.credential;  // The JWT ID token received from Google
+
+  // Send the token to the server for verification and authentication
+  fetch('http://localhost:4000/auth/google/callback', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ id_token }),
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      console.log('User authenticated successfully:', data.user);
+      // Redirect or update UI based on successful authentication
+    } else {
+      console.error('Authentication failed:', data.message);
+    }
+  })
+  .catch(error => {
+    console.error('Error during authentication:', error);
+  });
+}
 }

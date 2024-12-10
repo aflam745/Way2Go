@@ -73,3 +73,24 @@ header h1 {
     list-style-type: disc;
     padding-left: 20px;
 }
+
+#g-signin-button {
+  width: 200px;
+  height: 50px;
+  background-color: #4285f4;
+  color: white;
+  font-size: 16px;
+  text-align: center;
+  line-height: 50px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  position: fixed; /* Ensures it stays in the same place even when scrolling */
+  top: 10px; /* Adjusts distance from the top */
+  right: 10px; /* Adjusts distance from the right */
+  z-index: 1000; /* Ensures it stays on top of other elements */
+}
+
+#g-signin-button:hover {
+  background-color: #357ae8;
+}

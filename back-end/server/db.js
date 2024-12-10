@@ -42,6 +42,28 @@ const ActivityModel = db.define('activity', {
 }, { freezeTableName: true }
 )
 
+// Define the User model
+const User = db.define("User", {
+    username: { 
+        type: DataTypes.STRING, 
+        unique: false,
+        allowNull: false, 
+        validate: {
+            notNull: {msg: `Username is required.`},
+            notEmpty: {msg: `Username cannot be empty.`}
+        } 
+    },
+    googleId: { 
+        type: DataTypes.STRING,
+        unique: true,
+        allowNull: false,
+        validate: {
+            notNull: {msg: `Google ID is required.`},
+            notEmpty: {msg: `Google ID cannot be empty`},
+        }
+    },
+});
+
 
 async function initializeDatabase() {
     try {
@@ -153,9 +175,9 @@ async function saveActivities(activites) {
   return
 }
 
-export function loadItineraries(userId) {
+// export function loadItineraries(userId) {
   
-}
+// }
 
 exports.loadItinerary = loadItinerary
 exports.saveItinerary = saveItinerary

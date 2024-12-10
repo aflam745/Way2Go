@@ -1,7 +1,7 @@
-import passport from "passport";
-import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import dotenv from "dotenv";
-import User from "../models/user.js";
+const passport = require("passport");
+const { Strategy } = require("passport-google-oauth20");
+const dotenv = require("dotenv");
+const User = require("../server/db.js");
 
 // Load environment variables from a .env file
 dotenv.config();
@@ -11,7 +11,7 @@ dotenv.config();
 // It requires a client ID and a client secret, which can be obtained by
 // creating a new project in the Google Developers Console.
 passport.use(
-  new GoogleStrategy(
+  new Strategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -38,4 +38,4 @@ passport.deserializeUser(async (id, done) => {
   done(null, user);
 });
 
-export default passport;
+module.exports = passport

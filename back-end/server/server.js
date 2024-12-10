@@ -1,12 +1,11 @@
 const express = require('express');
 const cors = require('cors');
-const { saveItinerary, saveActivities, loadItineraryWithActivities } = require('./db');
-const passport = require('../passport.js');
+const { saveItinerary, saveActivities, loadItineraryWithActivities, User} = require('./db');
+const passport = require('../auth/passport.js');
 const session = require("express-session");
 require('dotenv').config();
 //Next two lines are for user routes
-const {body, validationRes} = require('express-validator');
-const User = require('../models/user.js');
+const {body, validationResult} = require('express-validator');
 const factoryResponse = require("../auth/middleware.js");
 
 const fetch = (...args) =>
@@ -77,7 +76,7 @@ app.post(
         body('googleId').notEmpty().withMessage('Google ID is required.'),
     ],
     async (req, res) => {
-        const errors = validationRes(req);
+        const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
