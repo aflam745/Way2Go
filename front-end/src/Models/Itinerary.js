@@ -434,4 +434,25 @@ export default class Itinerary {
         if (!res.ok) console.error("Failed to save activities to database.");
     }
 
+    static async fetchItinerary(itineraryID) {
+        try {
+            const response = await fetch('http://localhost:4000/loadItinerary', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: itineraryID
+            });
+
+            if (response.ok) {
+                console.log("Received itinerary!");
+            } else {
+                console.error("Failed to fetch itinerary:", response.status, response.statusText);
+            }
+        } catch (e) {
+            console.error("Error while fetching itinerary:", e);
+        }
+        
+    }
+
 }

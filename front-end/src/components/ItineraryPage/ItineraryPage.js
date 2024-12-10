@@ -36,6 +36,10 @@ export default class ItineraryPage extends BaseComponent {
         this.#storeInIndexedDB(itinerary);
     }
 
+    async #fetchActivityData() {
+        
+    }
+
     #storeInIndexedDB(itinerary) {
         this.#itineraryDB.addActivity(itinerary);
         itinerary.activities.forEach(activity => this.#activityDB.addActivity(activity));

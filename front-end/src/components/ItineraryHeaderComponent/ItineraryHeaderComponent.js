@@ -1,13 +1,18 @@
 import { BaseComponent } from "../BaseComponent/BaseComponent.js";
 import Itinerary from "../../Models/Itinerary.js";
 import { convertDateToUnixTimestamp, convertUnixToDateString } from "../../utils/TimeConversions.js";
+import { ActivityDatabase } from "../../Models/ActivityDatabase.js";
+import { getQueryParams } from "../../lib/router.js";
 
 export default class ItineraryHeaderComponent extends BaseComponent {
     #container = null;
+    #itineraryDB = null;
+    #itinerary = null;
     constructor() {
         super();
         this.loadCSS("ItineraryHeaderComponent");
-        this.itinerary = Itinerary.getInstance();
+        // this.itinerary = Itinerary.getInstance();
+        this.#itineraryDB = new ActivityDatabase('ItineraryDB');
     }
 
     #initContainer() {
@@ -19,21 +24,21 @@ export default class ItineraryHeaderComponent extends BaseComponent {
     #createHeader() {
         // trip name
         const tripNameElement = document.createElement('h1');
-        tripNameElement.textContent = this.itinerary.tripName;
+        tripNameElement.textContent = this.itinerary.location;
         this.#container.appendChild(tripNameElement);
 
         // image
-        if (this.itinerary.image instanceof Blob) {
+        if (this.itinerary.picture instanceof Blob) {
             const imageElement = document.createElement('img');
-            imageElement.src = this.itinerary.image;
+            imageElement.src = this.itinerary.picture;
             imageElement.alt = "Image";
             imageElement.classList.add('itinerary-image')
             this.#container.appendChild(imageElement);
         }
 
         // start and end dates
-        const formattedStartDate = convertUnixToDateString(this.itinerary.startDate);
-        const formattedEndDate = convertUnixToDateString(this.itinerary.endDate);
+        const formattedStartDate = new Date(this.#itinerary.startDate).toLocaleString('en-us');
+        const formattedEndDate = new Date(this.#itinerary.endDate).toLocaleString('en-us');
 
         const timeframeElement = document.createElement('h3');
         timeframeElement.textContent = `From ${formattedStartDate} to ${formattedEndDate}`;
@@ -66,5 +71,14 @@ export default class ItineraryHeaderComponent extends BaseComponent {
         this.#initContainer();
         this.#createHeader();
         return this.#container;
+    }
+
+    async #fetchItinerary() {
+        try {
+            const itineraryID = getQueryParams(window.location).id;
+            this.#itinerary = await this.#itineraryDB.getActivity(itineraryID);
+        } catch (error) {
+            console.log('Failed to fetch itinerary from ActivityDB:', error);
+        }
     }
 }
