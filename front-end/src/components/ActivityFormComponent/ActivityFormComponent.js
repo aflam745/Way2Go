@@ -473,7 +473,7 @@ export class ActivityFormComponent extends BaseComponent {
             <label for="duration-hours">Duration:</label>
             <input type="number" id="duration-hours" name="durationHours" placeholder="Hours" min="0" required><a>h</a>
             <input type="number" id="duration-minutes" name="durationMinutes" placeholder="Minutes" min="0" max="59" required><a>m</a>
-            <button type="button" id="set-full-duration">Activity spans the full time interval</button>
+            <button type="button" id="set-full-duration" class="secondary-button">Activity spans the full time interval</button>
             <br>
 
             <label for="location-search">Address:</label>
@@ -481,7 +481,7 @@ export class ActivityFormComponent extends BaseComponent {
             <br>
 
             <label for="activity-type">Type of activity:</label>
-            <select id="activity-type" name="activityType">
+            <select id="activity-type" name="activityType" class="custom-select">
                 <option value="Activity">Activity</option>
                 <option value="Breakfast">Breakfast</option>
                 <option value="Lunch">Lunch</option>

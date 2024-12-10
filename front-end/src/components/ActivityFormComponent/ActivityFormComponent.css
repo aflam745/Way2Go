@@ -14,8 +14,8 @@
   padding: 10px;
   font-size: 1rem;
   margin-bottom: 10px;
-  background: white;
-  border: 1px solid var(--border-light-gray);
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 5px;
   box-sizing: border-box;
@@ -50,4 +50,49 @@
   margin-top: 0;
   font-size: 1.5rem;
   text-align: center;
+}
+
+.custom-select {
+  font-size: 1rem;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #333;
+  cursor: pointer;
+}
+
+/* Styling for hover and focus */
+.custom-select:hover {
+  border-color: #888;
+}
+
+.secondary-button {
+  background-color: #b0b0b0;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.secondary-button:hover {
+  background-color: #a0a0a0;
+}
+
+#add-activity {
+  background-color: #28a745;
+  color: white;
+  margin-right: 10px;
+}
+
+#add-activity:hover {
+  background-color: #218838;
+}
+
+#clear {
+  background-color: #dc3545;
+  color: white;
+}
+
+#clear:hover {
+  background-color: #c82333;
 }
