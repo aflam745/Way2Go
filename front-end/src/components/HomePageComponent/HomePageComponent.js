@@ -42,6 +42,7 @@ export class HomePageComponent extends BaseComponent {
     // Render and append the form component to the container
     const formElement = this.#formComponent.render();
     this.#container.appendChild(formElement);
+    formElement.querySelector('dialog').showModal()
 
     // Attach event listener to the form submission
     formElement.querySelector("form").onsubmit = async (event) => {

@@ -33,7 +33,9 @@ form h2 {
 
 form label {
   display: block;
-  margin-top: 15px;
+  padding-bottom: 2px;
+  padding-top: 6px;
+  /*margin-top: 10px;*/
   font-weight: bold;
 }
 
