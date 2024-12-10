@@ -36,10 +36,12 @@ export class ActivityListComponent extends BaseComponent {
   // Sets up the inner HTML of the container
   #setupContainerContent() {
     this.#container.innerHTML = `
-      <div>
+      <div class="activity-header">
         <h2>Activity List</h2>
-        <button id="generateItinerary">Generate itinerary</button>
-        <button id="clearList">Clear list</button>
+        <div class="button-group">
+          <button id="generateItinerary">Generate itinerary</button>
+          <button id="clearList">Clear</button>
+        </div>
       </div>
       <ul id="activityList"></ul>
     `;
@@ -61,6 +63,14 @@ export class ActivityListComponent extends BaseComponent {
 
     generateItineraryButton.addEventListener('click', async (e) => {
         await Itinerary.optimizeRoute(itineraryId);
+
+        this.#activityDB.deleteAllEntries()
+          .then((message) => {
+            console.log(message);
+          })
+          .catch((error) => {
+            console.error("Failed to delete all activities from ActivityDB:", error);
+          });
 
         const queryParams = getQueryParams(window.location);
         const itineraryId = { id: queryParams.id }

@@ -356,7 +356,7 @@ export default class Itinerary {
                 // assign the time_windows to an array of 1 window given by the earliest/latest start/end times
                 job.time_windows = [
                     [
-                        convertDateToUnixTimestamp(new Date(activity.earliestStartTime)), 
+                        convertDateToUnixTimestamp(new Date(activity.earliestStartTime)),
                         convertDateToUnixTimestamp(new Date(activity.latestEndTime))
                     ]
                 ]
@@ -427,12 +427,13 @@ export default class Itinerary {
         });
 
         // save activities to database
-        const res = await fetch("http://localhost:4000/saveActivities", {
+        const res = await fetch("http://localhost:4000/deleteItinerary/", {
             method: 'POST',
             body: JSON.stringify(activities)
         });
         if (!res.ok) console.error("Failed to save activities to database.");
     }
+
 
     static async fetchItineraryAndActivityData(itineraryID) {
         try {
@@ -466,7 +467,6 @@ export default class Itinerary {
                 },
                 body: JSON.stringify(itinerary)
             });
-
             if (response.ok) {
                 console.log("Saved itinerary!");
             } else {
@@ -476,9 +476,5 @@ export default class Itinerary {
             console.error("Error while saving itinerary:", e);
         }
     }
-
-    
-
-
 }
 

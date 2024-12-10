@@ -454,48 +454,54 @@ export class ActivityFormComponent extends BaseComponent {
 
     #getTemplate() {
         return `
-    <form>
-      <h2>Add New Activity</h2>
+        <form>
+            <h2>Add New Activity</h2>
 
-      <input type="hidden" id="id" name="id">
+            <input type="hidden" id="id" name="id">
 
-      <label for="name">Activity name:</label>
-      <input type="text" id="name" name="name" placeholder="Enter activity name" required>
-      <br>
+            <label for="name">Activity name:
+                <span style="color:red">*</span>
+            </label>
+            <input type="text" id="name" name="name" placeholder="Enter activity name" required>
+            <br>
 
-      <label for="start-time">Earliest start time:</label>
-      <input type="datetime-local" id="start-time" name="earliestStartTime">
-      <br>
-      <label for="end-time">Latest finish time:</label>
-      <input type="datetime-local" id="end-time" name="latestEndTime">
-      <br>
+            <label for="start-time">Earliest start time:</label>
+            <input type="datetime-local" id="start-time" name="earliestStartTime">
+            <br>
+            <label for="end-time">Latest finish time:</label>
+            <input type="datetime-local" id="end-time" name="latestEndTime">
+            <br>
 
-      <label for="duration-hours">Duration:</label>
-      <input type="number" id="duration-hours" name="durationHours" placeholder="Hours" min="0" required><a>h</a>
-      <input type="number" id="duration-minutes" name="durationMinutes" placeholder="Minutes" min="0" max="59" required><a>m</a>
-      <button type="button" id="set-full-duration">Activity spans the full time interval</button>
-      <br>
+            <label for="duration-hours">Duration:
+                <span style="color:red">*</span>
+            </label>
+            <input type="number" id="duration-hours" name="durationHours" placeholder="Hours" min="0" required><a>h</a>
+            <input type="number" id="duration-minutes" name="durationMinutes" placeholder="Minutes" min="0" max="59" required><a>m</a>
+            <button type="button" id="set-full-duration" class="secondary-button">Activity spans the full time interval</button>
+            <br>
 
-      <label for="location-search">Address:</label>
-      <div id="location-search-container"></div>
-      <br>
+            <label for="location-search">Address:
+                <span style="color:red">*</span>
+            </label>
+            <div id="location-search-container"></div>
+            <br>
 
-      <label for="activity-type">Type of activity:</label>
-      <select id="activity-type" name="activityType">
-        <option value="Activity">Activity</option>
-        <option value="Breakfast">Breakfast</option>
-        <option value="Lunch">Lunch</option>
-        <option value="Dinner">Dinner</option>
-      </select>
-      <br>
+            <label for="activity-type">Type of activity:</label>
+            <select id="activity-type" name="activityType" class="custom-select">
+                <option value="Activity">Activity</option>
+                <option value="Breakfast">Breakfast</option>
+                <option value="Lunch">Lunch</option>
+                <option value="Dinner">Dinner</option>
+            </select>
+            <br>
 
-      <label for="notes">Notes:</label>
-      <textarea id="notes" name="notes"></textarea>
-      <br>
+            <label for="notes">Notes:</label>
+            <textarea id="notes" name="notes"></textarea>
+            <br>
 
-      <button id="add-activity">Add Activity</button>
-      <button id="clear">Clear</button>
-    </form>
+            <button id="add-activity">Add Activity</button>
+            <button id="clear">Clear</button>
+        </form>
   `;
     }
 
@@ -511,6 +517,7 @@ export class ActivityFormComponent extends BaseComponent {
 
         clearActivityBtn.addEventListener('click', (e) => {
             e.preventDefault();
+            this.#changeSubmitTextToAdd();
             this.#clearInputs();
         });
 
@@ -641,6 +648,9 @@ export class ActivityFormComponent extends BaseComponent {
       * Sets the values on the form based on the values present in the activityData object
       */
     #fillFormEditActivity(activityData) {
+        // Update the button text to indicate edit mode
+        this.#changeSubmitTextToEdit();
+
         const data = activityData.activityData;
 
         for (let [key, val] of Object.entries(data)) {
@@ -688,9 +698,6 @@ export class ActivityFormComponent extends BaseComponent {
             if (hoursInput) hoursInput.value = data.durationHours || 0;
             if (minutesInput) minutesInput.value = data.durationMinutes || 0;
         }
-
-        // Update the button text to indicate edit mode
-        this.#changeSubmitTextToEdit();
     }
 
     #changeSubmitTextToEdit() {
