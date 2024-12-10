@@ -12,8 +12,24 @@ export class HomePageComponent extends BaseComponent {
   constructor() {
     super();
     this.loadCSS("HomePageComponent");
+    this.#loadFontAwesome();
     this.#formComponent = new ItineraryFormComponent();
     this.#itineraryDB = new ActivityDatabase('ItineraryDB');
+  }
+
+  #loadFontAwesome() {
+    if (document.querySelector('link[href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"]')) {
+      // Font Awesome is already loaded
+      return;
+    }
+
+    const faLink = document.createElement('link');
+    faLink.rel = 'stylesheet';
+    faLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
+    faLink.integrity = 'sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==';
+    faLink.crossOrigin = 'anonymous';
+    faLink.referrerPolicy = 'no-referrer';
+    document.head.appendChild(faLink);
   }
 
   render() {
@@ -42,6 +58,7 @@ export class HomePageComponent extends BaseComponent {
     // Render and append the form component to the container
     const formElement = this.#formComponent.render();
     this.#container.appendChild(formElement);
+    formElement.querySelector('dialog').showModal()
 
     // Attach event listener to the form submission
     formElement.querySelector("form").onsubmit = async (event) => {
@@ -66,9 +83,8 @@ export class HomePageComponent extends BaseComponent {
         ...itineraryId,
       });
 
+      this.#addItineraryTile(formElement.querySelector("#location").value, itineraryId);
 
-      await Itinerary.saveItinerary(obj);
-      this.#addItineraryTile(formElement.querySelector("#location").value);
 
       // Remove the form
       formElement.remove();
@@ -89,11 +105,10 @@ export class HomePageComponent extends BaseComponent {
       });
   }
 
-  #addItineraryTile(title) {
+  #addItineraryTile(title, id) {
     // Create a new tile
     const newTile = document.createElement("div");
-    newTile.classList.add("tile");
-    newTile.textContent = title;
+    newTile.classList.add("tile", "itineraryTile")
 
     const headerElement = document.createElement("h2");
     headerElement.classList.add("tileHeader");
@@ -160,7 +175,7 @@ export class HomePageComponent extends BaseComponent {
     try {
       const itineraries = await this.#itineraryDB.getAllActivity();
       itineraries.forEach(data => {
-        this.#addItineraryTile(data.location)
+        this.#addItineraryTile(data.location, data.id)
       });
     } catch (error) {
       console.error('failed to fetch itineraries from ItineraryDB:', error);
