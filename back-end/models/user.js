@@ -4,7 +4,7 @@ import { db } from '../server/db.js'
 const User = db.define("User", {
     username: { 
         type: DataTypes.STRING, 
-        unique: true, 
+        unique: false,
         allowNull: false, 
         validate: {
             notNull: {msg: `Username is required.`},

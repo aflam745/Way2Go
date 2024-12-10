@@ -24,7 +24,6 @@ passport.use(
         user = await User.create({
           googleId: profile.id,
           username: profile.displayName,
-          role: "admin",
         });
       }
       done(null, user);

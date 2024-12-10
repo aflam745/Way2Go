@@ -7,6 +7,7 @@ require('dotenv').config();
 //Next two lines are for user routes
 const {body, validationRes} = require('express-validator');
 const User = require('../models/user.js');
+const factoryResponse = require("../auth/middleware.js");
 
 const fetch = (...args) =>
     import('node-fetch').then(({ default: fetch }) => fetch(...args));
@@ -68,6 +69,7 @@ app.post('/optimize', async(req, res) => {
 });
 
 //POST for /register
+//! Won't actually use this for now, as Passport handles it for Google OAuth
 app.post(
     '/register',
     [
@@ -94,7 +96,7 @@ app.post(
     }
 );
 
-//GET for logout
+//GET for logout using Passport
 app.get('/logout', (req, res) => {
   req.logout(function (err) {
     if (err) {

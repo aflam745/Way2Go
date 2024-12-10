@@ -11,6 +11,7 @@ const { Sequelize, DataTypes } = require('sequelize')
   * @property {Location} endLocation
   * @property {unknown} transportation
   * @property {string} description
+  * @property {string} [userId]
   *
   * @typedef {Object} Location
   * @property {number} lon
@@ -99,6 +100,10 @@ async function saveActivities(activites) {
     replacements: a
   })
   return 
+}
+
+export function loadItineraries(userId) {
+  
 }
 
 exports.db = new sqlite3('records.db')

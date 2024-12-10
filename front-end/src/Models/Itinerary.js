@@ -6,7 +6,7 @@ import { ActivityDatabase } from "./ActivityDatabase.js";
 
 export default class Itinerary {
     static #instance = null;
-    constructor(id, tripName, startDate, endDate, startLocation, endLocation, transportation, description, image) {
+    constructor(id, tripName, startDate, endDate, startLocation, endLocation, transportation, description, image, userId = null) {
         this.id = id;
         this.tripName = tripName;
         this.startDate = startDate; // earliest time activities can be scheduled
@@ -16,6 +16,7 @@ export default class Itinerary {
         this.transportation = transportation;
         this.description = description;
         this.image = image;
+        this.userId = userId; //for if there is a user associated with it
 
         this.activities = new Map(); // scheduled activities in the itinerary, mapped by ID
 
