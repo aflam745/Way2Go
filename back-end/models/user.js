@@ -11,15 +11,6 @@ const User = db.define("User", {
             notEmpty: {msg: `Username cannot be empty.`}
         } 
     },
-    email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-            isEmail: {msg: `Invalid email format.`},
-            notNull: {msg: `Email is required`},
-            notEmpty: {msg: `Email cannot be empty`}
-        }
-    },
     googleId: { 
         type: DataTypes.STRING,
         unique: true,
@@ -28,10 +19,6 @@ const User = db.define("User", {
             notNull: {msg: `Google ID is required.`},
             notEmpty: {msg: `Google ID cannot be empty`},
         }
-    },
-    role: { 
-        type: DataTypes.STRING, 
-        defaultValue: "user",
     },
 });
 

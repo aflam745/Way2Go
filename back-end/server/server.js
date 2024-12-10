@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const { saveActivities } = require('./db');
+const passport = require('../passport.js');
+const session = require("express-session");
 require('dotenv').config();
 //Next two lines are for user routes
 const {body, validationRes} = require('express-validator');
@@ -15,6 +17,16 @@ const PORT = 4000;
 
 app.use(cors());
 app.use(express.json());
+//For Authentication
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.post('/getDirections', async (req, res) => {
     const body = req.body;
@@ -60,7 +72,6 @@ app.post(
     '/register',
     [
         body('username').notEmpty().withMessage('Username is required.'),
-        body('email').isEmail().withMessage('Invalid email format.'),
         body('googleId').notEmpty().withMessage('Google ID is required.'),
     ],
     async (req, res) => {
@@ -68,13 +79,13 @@ app.post(
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
         }
-        const { username, email, googleId } = req.body;
+        const { username, googleId } = req.body;
         try {
-            const newUser = await User.create({ username, email, googleId });
+            const newUser = await User.create({ username, googleId });
             res.status(201).json({ message: 'User registered successfully', user: newUser });
         } catch (error) {
             if (error.name === 'SequelizeUniqueConstraintError') {
-                res.status(409).json({ error: 'Google ID, email, or username already exists.' });
+                res.status(409).json({ error: 'Google ID username already exists.' });
             } else {
                 console.error(error);
                 res.status(500).json({ error: 'Internal server error' });
@@ -82,6 +93,32 @@ app.post(
         }
     }
 );
+
+//GET for logout
+app.get('/logout', (req, res) => {
+  req.logout(function (err) {
+    if (err) {
+      res.json(factoryResponse(500, "Logout failed"));
+      return;
+    }
+    res.json(factoryResponse(200, "Logout successful"));
+  });
+});
+
+//GETs for Google Authentication
+const googleAuthCallback = (req, res) => {
+  res.redirect("/");
+};
+app.get (
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile"] })
+);
+
+app.get( 
+  "/auth/google/callback",
+  passport.authenticate("google", { failureRedirect: "/" }),
+  googleAuthCallback
+)
 
 app.get('/loadItinerary', async (req, res) => {
   const body = req.body
