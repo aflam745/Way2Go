@@ -3,9 +3,9 @@ import LocationSearchComponent from "../LocationSearchComponent/LocationSearchCo
 
 
 export class ItineraryFormComponent extends BaseComponent {
-#container = null;
-#startLocationEntry;
-#endLocationEntry;
+  #container = null;
+  #startLocationEntry;
+  #endLocationEntry;
 
   constructor() {
     super();
@@ -34,7 +34,7 @@ export class ItineraryFormComponent extends BaseComponent {
 
   }
 
-  #attachEventListeners(){
+  #attachEventListeners() {
     const closeButton = this.#container.querySelector('#close-form');
 
     closeButton.addEventListener('click', () => {
@@ -45,6 +45,7 @@ export class ItineraryFormComponent extends BaseComponent {
   #getTemplate() {
     return `
       <div class="form-container" id="itinerary-form-container">
+        <dialog>
 
         <button class="close-button" id="close-form" aria-label="Close form">&times;</button>
 
@@ -89,7 +90,8 @@ export class ItineraryFormComponent extends BaseComponent {
           <button id="add-itinerary" type="submit">Create Itinerary</button>
           <button id="clear" type="reset">Clear</button>
         </form>
-      </div>
+      </dialog>
+    </div>
     `;
   }
 }
