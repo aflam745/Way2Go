@@ -2,6 +2,7 @@ import { BaseComponent } from "../BaseComponent/BaseComponent.js";
 import { ItineraryFormComponent } from "../ItineraryFormComponent/ItineraryFormComponent.js";
 import { constructURLFromPath, navigate, serializeQueryParams } from "../../lib/router.js";
 import { ActivityDatabase } from "../../Models/ActivityDatabase.js";
+import Itinerary from "../../Models/Itinerary.js";
 
 export class HomePageComponent extends BaseComponent {
   #container = null;
@@ -17,6 +18,7 @@ export class HomePageComponent extends BaseComponent {
 
   render() {
     this.#createContainer();
+    this.#fetchAndDisplayItineraries();
     return this.#container;
   }
 
@@ -42,33 +44,38 @@ export class HomePageComponent extends BaseComponent {
     this.#container.appendChild(formElement);
 
     // Attach event listener to the form submission
-    formElement.querySelector("form").onsubmit = (event) => {
+    formElement.querySelector("form").onsubmit = async (event) => {
       event.preventDefault(); // Prevent default form submission behavior
 
       const fd = new FormData(event.target)
       const locationEntries = this.#formComponent.getLocationEntries();
-      console.log(locationEntries);
-      
+
       const obj = Object.fromEntries(fd);
       obj["startLocation"] = locationEntries.startLocationEntry;
       obj["endLocation"] = locationEntries.endLocationEntry;
-
-      console.log(obj);
 
       const currentTime = Date.now();
       const randThreeDigitInt = (Math.floor((Math.random() * 900) + 100)).toString();
       const id = currentTime + randThreeDigitInt;
       const itineraryId = { id: id };
 
+      obj["id"] = id;
+
       this.#addItineraryToIndexedDB({
         ...obj,
         ...itineraryId,
       });
 
+
+      await Itinerary.saveItinerary(obj);
+      this.#addItineraryTile(formElement.querySelector("#location").value);
+
+      // Remove the form
+      formElement.remove();
+
       const serializedParams = serializeQueryParams(itineraryId);
       const url = constructURLFromPath('/editItinerary', serializedParams);
       navigate(url);
-      this.#addItineraryTile(formElement);
     };
   }
 
@@ -82,29 +89,34 @@ export class HomePageComponent extends BaseComponent {
       });
   }
 
-  #addItineraryTile(formElement) {
-    // Get form values
-    const title = formElement.querySelector("#location").value;
-
+  #addItineraryTile(title) {
     // Create a new tile
     const newTile = document.createElement("div");
     newTile.classList.add("tile");
     newTile.textContent = title;
 
-    // Add navigation functionality to the tile
-    newTile.onclick = () => {
-      // Update the URL without reloading the page
-      const pageURL = `/activity/${encodeURIComponent(title)}`;
-      history.pushState({}, "", pageURL);
+    // // Add navigation functionality to the tile
+    // newTile.onclick = () => {
+    //   // Update the URL without reloading the page
+    //   const pageURL = `/activity/${encodeURIComponent(title)}`;
+    //   history.pushState({}, "", pageURL);
 
-      // Let the RouterComponent handle rendering the new page
-      dispatchEvent(new PopStateEvent("popstate"));
-    };
+    //   // Let the RouterComponent handle rendering the new page
+    //   dispatchEvent(new PopStateEvent("popstate"));
+    // };
 
     // Append the new tile to the container
     this.#container.appendChild(newTile);
+  }
 
-    // Remove the form
-    formElement.remove();
+  async #fetchAndDisplayItineraries() {
+    try {
+      const itineraries = await this.#itineraryDB.getAllActivity();
+      itineraries.forEach(data => {
+        this.#addItineraryTile(data.location)
+      });
+    } catch (error) {
+      console.error('failed to fetch itineraries from ItineraryDB:', error);
+    }
   }
 }

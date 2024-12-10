@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { saveActivities } = require('./db');
+const { saveItinerary, saveActivities, loadItineraryWithActivities } = require('./db');
 const passport = require('../passport.js');
 const session = require("express-session");
 require('dotenv').config();
@@ -138,14 +138,24 @@ app.get('/loadItinerary', async (req, res) => {
 
 app.post('/saveItinerary', async (req, res) => {
   const body = req.body
-  const data = JSON.parse(body.data)
   try {
-    await saveItinerary(data)
+    await saveItinerary(body)
     res.sendStatus(200)
     return
   } catch (error) {
+    console.log(error);
     res.sendStatus(404)
     return
+  }
+})
+
+app.get('/loadCompleteItinerary/:id', async (req, res) => {
+  const id = req.params.id
+  try {
+    const out = await loadItineraryWithActivities(id)
+    res.json(out)
+  } catch (error) {
+    res.sendStatus(404)
   }
 })
 

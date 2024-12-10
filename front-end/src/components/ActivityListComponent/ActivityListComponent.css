@@ -1,19 +1,67 @@
 @import url("../../theme.css");
 /* Task List Container */
 .activity-list {
-  background-color: var(--white);
-  box-shadow: 0px 4px 8px var(--shadow);
-  padding: 20px;
-  border: 1px solid var(--border-light-gray);
-  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
   width: 100%;
   max-width: 800px;
   box-sizing: border-box;
   margin-bottom: 20px;
 }
 
-.activity-list h2 {
-  margin-top: 0;
-  font-size: 1.5rem;
+.activity-header h2 {
+  margin: 0;
   text-align: center;
+  flex-grow: 1;
+}
+
+.activity-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+}
+
+#generateItinerary {
+  background-color: #28a745;
+  color: white;
+  margin-right: 10px;
+}
+
+#generateItinerary:hover {
+  background-color: #218838;
+}
+
+#clearList {
+  background-color: #dc3545;
+  color: white;
+}
+
+#clearList:hover {
+  background-color: #c82333;
+}
+
+#activityList {
+  list-style-type: none;
+  padding: 0;
+  margin: 20px 0 0;
+  width: 100%;
+  max-width: 600px;
+  text-align: left;
+}
+
+#activityList li {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  background-color: #fff;
 }
