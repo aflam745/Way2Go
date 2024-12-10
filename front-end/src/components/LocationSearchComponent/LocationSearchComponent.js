@@ -96,7 +96,7 @@ export default class LocationSearchComponent extends BaseComponent {
                 // create dropdown entry for each result
                 this.#createDropdownElement(place);
             });
-        }, 1500);
+        }, 500);
     }
 
     resetEntry() {
