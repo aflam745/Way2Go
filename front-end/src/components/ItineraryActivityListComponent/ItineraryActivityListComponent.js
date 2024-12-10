@@ -5,10 +5,14 @@ import { ActivityDatabase } from "../../Models/ActivityDatabase.js";
 export class ItineraryActivityListComponent extends BaseComponent {
     #container = null;
     #itineraryDB = null;
+    #activities;
+    #selectedDay;
 
-    constructor() {
+    constructor(activities, selectedDay) {
         super();
         this.loadCSS('ItineraryActivityListComponent');
+        this.#activities = activities;
+        this.#selectedDay = selectedDay;
         this.#itineraryDB = new ActivityDatabase('ItineraryDB');
     }
 
@@ -22,6 +26,7 @@ export class ItineraryActivityListComponent extends BaseComponent {
     #createContainer() {
         this.#container = document.createElement('div');
         this.#container.classList.add('itinerary-activity-list');
+        this.#container.id = 'itineraryActivityList';
     }
 
     #setupContainerContent() {

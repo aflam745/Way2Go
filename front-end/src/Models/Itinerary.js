@@ -116,15 +116,13 @@ export default class Itinerary {
     static async loadItineraryFromDB2(itineraryId) {
         const res = await fetch("/loadItinerary", {
             method: 'GET',
-            body: JSON.stringify(id)
+            body: JSON.stringify(itineraryId)
         });
         if (!res.ok) {
             console.error("Failed to load itinerary from database.");
             return;
         }
-
         return res.json();
-
     }
 
     addActivity(
