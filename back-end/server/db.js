@@ -230,19 +230,56 @@ async function loadItineraryWithActivities(id) {
 
 
 
+// /**
+//   * WARNING: This function is untested may blow up
+//   *
+//   * @param {Activity[]} activites
+//   */
+// async function saveActivities(activites) {
+//   const date = new Date(); // date for createdAt/updatedAt fields
+//   const a = activites.map(arr => [a.id, a.itineraryId, JSON.stringify(a)], date, date)
+//   const result = await db.query(`insert into activity values ${data.map(a => '(?)').join(',')}`, {
+//     replacements: a
+//   })
+//   return
+// }
+
 /**
-  * WARNING: This function is untested may blow up
-  *
-  * @param {Activity[]} activites
-  */
-async function saveActivities(activites) {
-  const date = new Date(); // date for createdAt/updatedAt fields
-  const a = activites.map(arr => [a.id, a.itineraryId, JSON.stringify(a)], date, date)
-  const result = await db.query(`insert into activity values ${data.map(a => '(?)').join(',')}`, {
-    replacements: a
-  })
-  return
+ * @param {Activity[]} activities - Array of activities to save
+ * @returns {Promise<void>}
+ */
+async function saveActivities(activities) {
+    try {
+        const date = new Date(); // Common timestamp for createdAt/updatedAt fields
+
+        // Flattened array of all values
+        const values = activities.flatMap(activity => [
+            activity.id,
+            activity.itineraryId,
+            JSON.stringify(activity),
+            date,
+            date
+        ]);
+
+        // Placeholder string for each activity
+        const placeholders = activities.map(() => '(?, ?, ?, ?, ?)').join(', ');
+
+        // Execute the query
+        await db.query(
+            `INSERT INTO activity (id, itineraryId, data, createdAt, updatedAt) VALUES ${placeholders}`,
+            {
+                replacements: values,
+                type: QueryTypes.INSERT,
+            }
+        );
+
+        console.log(`${activities.length} activities saved successfully.`);
+    } catch (error) {
+        console.error('Error saving activities:', error);
+        throw error;
+    }
 }
+
 
 
 exports.loadItinerary = loadItinerary

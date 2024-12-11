@@ -88,13 +88,13 @@ app.get('/loadCompleteItinerary/:id', async (req, res) => {
   }
 })
 
-app.post('/saveActivites', async (req, res) => {
+app.post('/saveActivities', async (req, res) => {
   const body = req.body
   console.log("body", body);
   // WARNING: I do not know how the fetch method is structured so this may blow up
-  const data = JSON.parse(body)
+//   const data = JSON.parse(body)
   try {
-    await saveActivities(data)
+    await saveActivities(body)
     res.sendStatus(200)
     return
   } catch (error) {

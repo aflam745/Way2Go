@@ -447,9 +447,9 @@ export default class Itinerary {
         console.log(JSON.stringify(updatedActivities));
 
         // save activities to database
-        const res = await fetch("http://localhost:4000/saveActivities/", {
+        const res = await fetch("http://localhost:4000/saveActivities", {
             method: 'POST',
-            body: JSON.stringify(updatedActivities)
+            body: updatedActivities
         });
         if (!res.ok) console.error("Failed to save activities to database.");
     }
