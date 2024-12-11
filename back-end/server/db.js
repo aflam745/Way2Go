@@ -14,6 +14,7 @@ exports.db = new sqlite3.Database('records.db')
   * @property {Location} endLocation
   * @property {unknown} transportation
   * @property {string} description
+  * @property {string} [userId]
   *
   * @typedef {Object} Location
   * @property {number} lon
@@ -40,6 +41,28 @@ const ActivityModel = db.define('activity', {
     data: { allowNull: false, type: DataTypes.STRING }
 }, { freezeTableName: true }
 )
+
+// Define the User model
+const User = db.define("User", {
+    username: { 
+        type: DataTypes.STRING, 
+        unique: false,
+        allowNull: false, 
+        validate: {
+            notNull: {msg: `Username is required.`},
+            notEmpty: {msg: `Username cannot be empty.`}
+        } 
+    },
+    googleId: { 
+        type: DataTypes.STRING,
+        unique: true,
+        allowNull: false,
+        validate: {
+            notNull: {msg: `Google ID is required.`},
+            notEmpty: {msg: `Google ID cannot be empty`},
+        }
+    },
+});
 
 
 async function initializeDatabase() {
@@ -244,6 +267,9 @@ async function saveActivities(activites) {
   return
 }
 
+// export function loadItineraries(userId) {
+  
+// }
 
 exports.loadItinerary = loadItinerary
 exports.saveItinerary = saveItinerary
