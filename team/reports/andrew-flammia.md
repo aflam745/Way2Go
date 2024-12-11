@@ -64,20 +64,8 @@
 ### December 10, 2024
 
 - **Tasks**: Load itineraries in indexedDB to create tiles on home page.
-- **Details**: Created function to fetch itineraries from indexedDB to load all the tiles onto the home page.
+- **Details**: Created function to fetch itineraries from indexedDB to load all the tiles onto the home page. As well as updated some styling.
 - **Link to Commit**: [Initial Commit](https://github.com/aflam745/CS326Team36Project/commit/410ea7c57decef33c76c89176b7aa53d8a863958)
-
-### December 10, 2024
-
-- **Tasks**: Load itineraries in indexedDB to create tiles on home page.
-- **Details**: Created function to fetch itineraries from indexedDB to load all the tiles onto the home page. As well updated some styling for the forms in the application.
-- **Link to Commit**: [Initial Commit](https://github.com/aflam745/CS326Team36Project/commit/410ea7c57decef33c76c89176b7aa53d8a863958)
-
-### December 10, 2024
-
-- **Tasks**: Delete activities from indexedDB when generate itinerary.
-- **Details**: Created indexedDB function to delete all entries from indexedDB. Called the function when generate itinerary button is pressed.
-- **Link to Commit**: [Initial Commit](https://github.com/aflam745/CS326Team36Project/commit/181d7eff07f320c428e00f766e087e73c61b1cf8)
 
 ### December 10, 2024
 
