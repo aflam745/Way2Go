@@ -83,6 +83,8 @@ export class HomePageComponent extends BaseComponent {
         ...itineraryId,
       });
 
+      await Itinerary.saveItinerary(obj);
+
       this.#addItineraryTile(formElement.querySelector("#location").value, itineraryId);
 
 

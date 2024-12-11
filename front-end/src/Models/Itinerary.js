@@ -177,11 +177,12 @@ export default class Itinerary {
             case "Walking":
                 return "foot-walking";
             case "Driving":
-                return "driving-road";
+                return "driving-car";
             case "Biking":
                 return "cycling-road";
             default:
-                throw new Error("Invalid transportation type: ", transportation);
+                // default to driving if no transportation specified
+                return "driving-car";
         }
     }
 
@@ -321,25 +322,26 @@ export default class Itinerary {
         const activityDatabase = new ActivityDatabase('ActivityDB');
         const itineraryDatabase = new ActivityDatabase('ItineraryDB');
 
-        const activities = activityDatabase.getAllActivity();
-        const itinerary = itineraryDatabase.getActivity(itineraryId);
+        const activities = await activityDatabase.getAllActivity();
+        console.log(itineraryId)
+        const itinerary = await itineraryDatabase.getActivity(itineraryId);
 
         if (activities.length >= 50) {
             alert("Too many activities!");
             return -1;
         }
 
-        tripStartLocation = itinerary.startLocation;
-        tripEndLocation = itinerary.endLocation;
+        const tripStartLocation = itinerary.startLocation;
+        const tripEndLocation = itinerary.endLocation;
 
-        tripStartTime = convertDateToUnixTimestamp(new Date(itinerary.startDate));
-        tripEndTime = convertDateToUnixTimestamp(new Date(itinerary.endDate));
+        const tripStartTime = convertDateToUnixTimestamp(new Date(itinerary.startDate));
+        const tripEndTime = convertDateToUnixTimestamp(new Date(itinerary.endDate));
 
         const vehicle = {
             id: 1,
             profile: this.#getTransportationType(itinerary.transportation),
-            start: [tripStartLocation.lon, tripStartLocation.lat],
-            end: [tripEndLocation.lon, tripEndLocation.lat],
+            start: [parseFloat(tripStartLocation.lon), parseFloat(tripStartLocation.lat)],
+            end: [parseFloat(tripEndLocation.lon), parseFloat(tripEndLocation.lat)],
             time_window: [tripStartTime, tripEndTime]
         };
 
@@ -347,8 +349,8 @@ export default class Itinerary {
 
         activities.forEach(activity => {
             const job = {
-                id: activity.id,
-                location: [activity.lon, activity.lat],
+                id: parseInt(activity.id, 10),
+                location: [parseFloat(activity.lon), parseFloat(activity.lat)],
                 service: convertHoursAndMinsToSeconds(activity.durationHours, activity.durationMinutes)
             };
 
@@ -384,52 +386,70 @@ export default class Itinerary {
             body: JSON.stringify(req)
         });
 
-        const data = await response.json();
+        const data = (await response.json()).data;
 
         if (data["unassigned"] && data["unassigned"].length > 0) {
             alert("Unable to optimize your itinerary. Try removing activities or adjusting their timings.");
             return -1;
         }
 
+        console.log(data);
+
         const trip = data.routes[0];
         const steps = trip.steps;
 
+        const getActivityById = (id) => activities.find(activity => parseInt(activity.id, 10) === id);
+
+
+        const updatedActivities = []
+
         steps.forEach(step => {
-            const { id, arrival, service, waiting_time: waitingTime } = step;
+            if (step.type === "job") {
+                const { id, arrival, service, waiting_time: waitingTime } = step;
 
-            const activity = activities[id];
+                const activity = getActivityById(id);
 
-            const unixStartTime = arrival + waitingTime;
-            const unixFinishTime = arrival + waitingTime + service;
+                console.log(activities);
+                console.log(activity);
 
-            activity.startTime = new Date(unixStartTime);
-            activity.finishTime = new Date(unixFinishTime);
+                const unixStartTime = arrival + waitingTime;
+                const unixFinishTime = arrival + waitingTime + service;
 
-            // Helper to calculate the day number relative to startDate
-            const calculateDayNumber = timestamp => {
-                const startDateUnix = convertDateToUnixTimestamp(itinerary.startDate);
-                return Math.floor((timestamp - startDateUnix) / 86400) + 1;
-            };
+                activity.startTime = new Date(unixStartTime);
+                activity.finishTime = new Date(unixFinishTime);
 
-            const startDay = calculateDayNumber(unixStartTime);
-            const endDay = calculateDayNumber(unixFinishTime);
+                // Helper to calculate the day number relative to startDate
+                const calculateDayNumber = timestamp => {
+                    console.log(itinerary.startDate);
+                    const startDateUnix = convertDateToUnixTimestamp(itinerary.startDate);
+                    return Math.floor((timestamp - startDateUnix) / 86400) + 1;
+                };
 
-            activity.day = [startDay];
+                const startDay = calculateDayNumber(unixStartTime);
+                const endDay = calculateDayNumber(unixFinishTime);
 
-            // if it straddles midnight, also assign it to the next day
-            if (endDay > startDay) {
-                activity.day.push(endDay);
+                activity.day = [startDay];
+
+                // if it straddles midnight, also assign it to the next day
+                if (endDay > startDay) {
+                    activity.day.push(endDay);
+                }
+
+                updatedActivities.push(activity);
+
+                // update the activity in IndexedDB
+                activityDatabase.deleteActivity(id);
+                activityDatabase.addActivity(activity);
             }
-
-            // update the activity in IndexedDB
-            activityDatabase.deleteActivity(id);
-            activityDatabase.addActivity(activity);
         });
 
+        console.log("updated activities", updatedActivities)
+        console.log(JSON.stringify(updatedActivities));
+
         // save activities to database
-        const res = await fetch("http://localhost:4000/deleteItinerary/", {
+        const res = await fetch("http://localhost:4000/saveActivities/", {
             method: 'POST',
-            body: JSON.stringify(activities)
+            body: JSON.stringify(updatedActivities)
         });
         if (!res.ok) console.error("Failed to save activities to database.");
     }
