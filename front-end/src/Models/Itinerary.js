@@ -326,7 +326,7 @@ export default class Itinerary {
 
         if (activities.length >= 50) {
             alert("Too many activities!");
-            return;
+            return -1;
         }
 
         tripStartLocation = itinerary.startLocation;
@@ -388,7 +388,7 @@ export default class Itinerary {
 
         if (data["unassigned"] && data["unassigned"].length > 0) {
             alert("Unable to optimize your itinerary. Try removing activities or adjusting their timings.");
-            return;
+            return -1;
         }
 
         const trip = data.routes[0];
