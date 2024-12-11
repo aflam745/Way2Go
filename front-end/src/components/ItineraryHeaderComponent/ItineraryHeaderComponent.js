@@ -2,16 +2,18 @@ import { BaseComponent } from "../BaseComponent/BaseComponent.js";
 import Itinerary from "../../Models/Itinerary.js";
 import { convertDateToUnixTimestamp, convertUnixToDateString } from "../../utils/TimeConversions.js";
 import { ActivityDatabase } from "../../Models/ActivityDatabase.js";
-import { getQueryParams } from "../../lib/router.js";
+import { getQueryParams, navigate } from "../../lib/router.js";
 
 export default class ItineraryHeaderComponent extends BaseComponent {
     #container = null;
     #itineraryDB = null;
     #itinerary = null;
+    #activityDB = null;
     constructor() {
         super();
         this.loadCSS("ItineraryHeaderComponent");
         this.#itineraryDB = new ActivityDatabase('ItineraryDB');
+        this.#activityDB = new ActivityDatabase('ActivityDB');
     }
 
     #initContainer() {
@@ -59,6 +61,27 @@ export default class ItineraryHeaderComponent extends BaseComponent {
         const descriptionElement = document.createElement('p');
         descriptionElement.textContent = this.#itinerary.description;
         this.#container.appendChild(descriptionElement);
+
+        const homeButton = document.createElement('button');
+        homeButton.textContent = "Home"
+        homeButton.onclick = () => {
+            // this.#itineraryDB.deleteAllEntries();
+            this.#activityDB.deleteAllEntries();
+            navigate("/")
+        }
+        homeButton.style.marginRight = "50"
+        this.#container.appendChild(homeButton);
+
+        const editItineraryButton = document.createElement('button');
+        editItineraryButton.textContent = "Edit Itinerary"
+        editItineraryButton.onclick = () => {
+            this.#itineraryDB.deleteAllEntries();
+            this.#activityDB.deleteAllEntries();
+            const id = getQueryParams(window.location).id
+            navigate(`/editItinerary?id=${id}`)
+        }
+        this.#container.appendChild(editItineraryButton);
+
     }
 
     async render() {
