@@ -1,8 +1,8 @@
 ## Andrew Flammia
 
-- [Finalized Activity Form page](https://github.com/aflam745/CS326Team36Project/pull/29/commits/04141b34f1dee70f556e70436bf5fd00a43a571b)
-- [Continued work on basic activity form page](https://github.com/aflam745/CS326Team36Project/commit/0b0d1d0c91f8fe885b6e9c151085c74c0b49fa58)
-- [Created Initial skeleton for the application](https://github.com/aflam745/CS326Team36Project/commit/8d0e8d3e4397b1c7b04e89324a0433f54763844b)
+- [Delete itineraries and activities from back-end database](https://github.com/aflam745/CS326Team36Project/commit/13450d4a9afcb813e34354aee15a3c0682c35287)
+- [Pass query params to itinerary and editItinerary url](https://github.com/aflam745/CS326Team36Project/commit/13ac628dcd698be3391586e63b265089c5767f2e)
+- [Load itineraries in indexedDB to create tiles on home page](https://github.com/aflam745/CS326Team36Project/commit/410ea7c57decef33c76c89176b7aa53d8a863958)
 
 ## Emmanuel K
 
