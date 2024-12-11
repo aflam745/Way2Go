@@ -62,7 +62,11 @@ export class ActivityListComponent extends BaseComponent {
     });
 
     generateItineraryButton.addEventListener('click', async (e) => {
-        const result = await Itinerary.optimizeRoute(itineraryId);
+        const queryParams = getQueryParams(window.location);
+        const itineraryId = { id: queryParams.id }
+        const serializedParams = serializeQueryParams(itineraryId);
+
+        const result = await Itinerary.optimizeRoute(queryParams.id);
 
         if (result == -1) {
           return
@@ -76,9 +80,7 @@ export class ActivityListComponent extends BaseComponent {
             console.error("Failed to delete all activities from ActivityDB:", error);
           });
 
-        const queryParams = getQueryParams(window.location);
-        const itineraryId = { id: queryParams.id }
-        const serializedParams = serializeQueryParams(itineraryId);
+        
         const url = constructURLFromPath('/itinerary', serializedParams);
 
         navigate(url);

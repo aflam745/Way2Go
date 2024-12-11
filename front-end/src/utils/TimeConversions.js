@@ -25,7 +25,7 @@ export function convertUnixToDateString(timestamp) {
  * @returns {number} the date as a UNIX timestamp
  */
 export function convertDateToUnixTimestamp(date) {
-    return Math.floor(date.getTime() / 1000);
+    return Math.floor(new Date(date).getTime() / 1000);
 }
 
 export function convertHoursAndMinsToSeconds(hours, mins) {

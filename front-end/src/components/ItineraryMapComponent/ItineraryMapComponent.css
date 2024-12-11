@@ -14,6 +14,23 @@
     
 }
 
+.leaflet-tooltip.start-end-label {
+    font-size: 25px;
+    font-style: bold;
+    background-color: white;
+    color: black;
+    opacity: 1;
+    border-radius: 3px;
+    padding: 3px;
+    margin-left: -10px;
+    margin-top: -20px;
+    max-width: 12rem;
+    width: max-content;
+    display: block;
+    text-wrap: balance;
+
+}
+
 .leaflet-tooltip:before {
     /* This removes the triangle from the tooltip*/
     display: none;

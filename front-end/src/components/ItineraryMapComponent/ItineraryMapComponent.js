@@ -12,17 +12,12 @@ export class MapComponent extends BaseComponent {
     #itinerary = null;
     #day = 1;
 
-    constructor() {
+    constructor(day) {
         super();
         this.map = null;
         this.#activityDB = new ActivityDatabase('ActivityDB');
         this.#itineraryDB = new ActivityDatabase('ItineraryDB');
-        EventHub.getInstance().subscribe(Events.ChangeDay, day => {
-            this.#container = null;
-            this.#day = day;
-            this.render();
-
-        })
+        this.#day = day;
     }
 
     async render() {
@@ -86,12 +81,14 @@ export class MapComponent extends BaseComponent {
         document.head.appendChild(mapStyles);
     }
 
-    #initializeMap(activities) {   
-        if (activities.length === 0) {
-            this.map = document.createElement('div').innerHTML = '';
-            return;
-        }   
-        this.map = L.map(this.#container, { zoomSnap: 0.1});
+    #initializeMap(activities) {
+        // if (activities.length === 0) {
+        //     this.map = document.createElement('div').innerHTML = '';
+        //     return;
+        // }
+
+        // Initialize the map
+        this.map = L.map(this.#container, { zoomSnap: 0.1 });
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors',
         }).addTo(this.map);
@@ -108,12 +105,11 @@ export class MapComponent extends BaseComponent {
                 iconAnchor: [12, 41],
                 popupAnchor: [1, -34],
                 tooltipAnchor: [16, -28],
-                shadowSize: [41, 41]
-                
+                shadowSize: [41, 41],
             });
 
-            // regular tooltip
-            const marker = L.marker([activity.lat, activity.lon], {icon} )
+            // Regular tooltip
+            const marker = L.marker([activity.lat, activity.lon], { icon })
                 .bindTooltip(originalTooltipText, {
                     permanent: true,
                     direction: "top",
@@ -121,45 +117,86 @@ export class MapComponent extends BaseComponent {
                 })
                 .addTo(this.map);
 
-            // show address on hover
-            marker.on('mouseover', () => {
-                const tooltip = marker.getTooltip();
-                tooltip.setContent(
-                    `${originalTooltipText}<br><i>${activity.address}</i>`
-                );
-                tooltip.options.permanent = false;
-                marker.openTooltip();
-            });
-
-            // reset to normal display when mouse leaves
-            marker.on('mouseout', () => {
-                const tooltip = marker.getTooltip();
-                tooltip.setContent(originalTooltipText);
-                tooltip.options.permanent = true;
-                marker.openTooltip();
-            });
-
             return marker;
         });
 
+        // Add START and END markers for the first and last day
+        if (this.#day === 1) {
+            const icon = L.icon({
+                iconUrl: '/components/ItineraryMapComponent/images/marker-icon.png',
+                shadowUrl: '/components/ItineraryMapComponent/images/marker-shadow.png',
 
-        if (markers.length > 0) {
-            const group = L.featureGroup(markers);
-            this.map.fitBounds(group.getBounds(), {padding: [80, 80]});
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                tooltipAnchor: [16, -28],
+                shadowSize: [41, 41],
+            });
+
+            const startMarker = L.marker([this.#itinerary.startLocation.lat, this.#itinerary.startLocation.lon], { icon: icon })
+                .bindTooltip("START", {
+                    permanent: true,
+                    direction: "top",
+                    className: "start-end-label",
+                })
+                .addTo(this.map);
+
+            markers.push(startMarker);
         }
 
-        // add line to map if geometry is given
+        if (this.#day === this.#calculateDays()) {
+            const icon = L.icon({
+                iconUrl: '/components/ItineraryMapComponent/images/marker-icon.png',
+                shadowUrl: '/components/ItineraryMapComponent/images/marker-shadow.png',
+
+                iconSize: [25, 41],
+                iconAnchor: [12, 41],
+                popupAnchor: [1, -34],
+                tooltipAnchor: [16, -28],
+                shadowSize: [41, 41],
+            });
+
+            const endMarker = L.marker([this.#itinerary.endLocation.lat, this.#itinerary.endLocation.lon], { icon: icon })
+                .bindTooltip("END", {
+                    permanent: true,
+                    direction: "top",
+                    className: "start-end-label",
+                })
+                .addTo(this.map);
+
+            markers.push(endMarker);
+        }
+
+        // Fit the map bounds to all markers
+        if (markers.length > 0) {
+            const group = L.featureGroup(markers);
+            this.map.fitBounds(group.getBounds(), { padding: [80, 80] });
+        }
+
+        // Add line to map if geometry is given
         if (this.geometry) {
             const geojson = {
                 "type": "Feature",
                 "geometry": {
                     "type": "LineString",
-                    "coordinates": this.geometry
-                }
-                
+                    "coordinates": this.geometry,
+                },
             };
 
             L.geoJSON(geojson).addTo(this.map);
         }
+    }
+
+
+
+
+    #calculateDays() {
+        const startDateString = this.#itinerary.startDate;
+        const endDateString = this.#itinerary.endDate;
+        const startDate = new Date(startDateString);
+        const endDate = new Date(endDateString);
+
+        const differenceInMilliseconds = endDate - startDate;
+        return Math.floor(differenceInMilliseconds / (1000 * 60 * 60 * 24)) + 1;
     }
 }

@@ -52,17 +52,14 @@ app.post('/getDirections', async (req, res) => {
 
 app.post('/optimize', async (req, res) => {
     const body = req.body;
-    const response = await fetch(`https://api.openrouteservice.org/v2/directions/${body.transportation}/geojson`, {
+    const response = await fetch(`https://api.openrouteservice.org/optimization`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8',
             'Authorization': process.env.ORS_API_KEY,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json; charset=utf-8'
         },
-        body: JSON.stringify({
-            coordinates: body.coordinates,
-            geometry: 'true',
-        })
+        body: JSON.stringify(body)
     });
 
     const data = await response.json();
@@ -160,12 +157,14 @@ app.get('/loadCompleteItinerary/:id', async (req, res) => {
   }
 })
 
-app.post('/saveActivites', async (req, res) => {
+app.post('/saveActivities', async (req, res) => {
+    console.log(req);
   const body = req.body
+  console.log("body", body);
   // WARNING: I do not know how the fetch method is structured so this may blow up
-  const data = JSON.parse(body)
+//   const data = JSON.parse(body)
   try {
-    await saveActivities(data)
+    await saveActivities(body)
     res.sendStatus(200)
     return
   } catch (error) {
