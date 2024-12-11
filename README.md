@@ -1,7 +1,17 @@
 # CS326Team36Project
+
 Group project for CS326
 
 ## Running the project
+
+Gather secrets so that the `.env` file has the following variables:
+
+```sh
+ORS_API_KEY=<ORS API KEY HERE>
+GOOGLE_CLIENT_ID=<GOOGLE CLIENT ID HERE>
+GOOGLE_CLIENT_SECRET=<GOOGLE CLIENT SECRET HERE>
+SESSION_SECRET=<GOOGLE SESSION SECRET HERE>
+```
 
 On one terminal session:
 
