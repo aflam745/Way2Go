@@ -62,7 +62,11 @@ export class ActivityListComponent extends BaseComponent {
     });
 
     generateItineraryButton.addEventListener('click', async (e) => {
-        await Itinerary.optimizeRoute(itineraryId);
+        const result = await Itinerary.optimizeRoute(itineraryId);
+
+        if (result == -1) {
+          return
+        }
 
         this.#activityDB.deleteAllEntries()
           .then((message) => {
