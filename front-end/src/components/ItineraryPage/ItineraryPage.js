@@ -33,8 +33,10 @@ export default class ItineraryPage extends BaseComponent {
         const queryParams = getQueryParams(window.location);
         const itineraryId = queryParams.id;
         let { itinerary, activities } = await Itinerary.fetchItineraryAndActivityData(itineraryId);
+        console.log(itinerary);
+        console.log(activities);
         itinerary = JSON.parse(itinerary.data);
-        activities = activities.map(activity => JSON.parse(activity));
+        activities = activities.map(activity => JSON.parse(activity.data));
         this.#storeInIndexedDB(itinerary, activities);
     }    
 
