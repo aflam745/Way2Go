@@ -89,6 +89,7 @@ app.get('/loadCompleteItinerary/:id', async (req, res) => {
 })
 
 app.post('/saveActivities', async (req, res) => {
+    console.log(req);
   const body = req.body
   console.log("body", body);
   // WARNING: I do not know how the fetch method is structured so this may blow up

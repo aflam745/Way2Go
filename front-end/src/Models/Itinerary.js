@@ -435,6 +435,8 @@ export default class Itinerary {
                     activity.day.push(endDay);
                 }
 
+                activity.itineraryId = itinerary.id;
+
                 updatedActivities.push(activity);
 
                 // update the activity in IndexedDB
@@ -449,7 +451,10 @@ export default class Itinerary {
         // save activities to database
         const res = await fetch("http://localhost:4000/saveActivities", {
             method: 'POST',
-            body: updatedActivities
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedActivities)
         });
         if (!res.ok) console.error("Failed to save activities to database.");
     }
