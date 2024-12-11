@@ -21,6 +21,11 @@ export default class ItineraryPage extends BaseComponent {
         super();
         this.#activityDB = new ActivityDatabase('ActivityDB');
         this.#itineraryDB = new ActivityDatabase('ItineraryDB');
+        EventHub.getInstance().subscribe(Events.ChangeDay,async (day) => {
+            console.log("changed day,", day)
+            this.#container.querySelector('#mapContainer').innerHTML = '';
+            this.#container.querySelector('#mapContainer').appendChild(await new MapComponent(day).render());
+        });
     }
 
     #initContainer() {
@@ -50,9 +55,12 @@ export default class ItineraryPage extends BaseComponent {
         this.#container.appendChild(await itineraryHeaderComponent.render());
     }
 
-    async #loadMap() {
-        const mapComponent = new MapComponent();
-        this.#container.appendChild(await mapComponent.render());
+    async #loadMap(day) {
+        const mapComponentContainer = document.createElement('div');
+        mapComponentContainer.id = "mapContainer";
+        const mapComponent = new MapComponent(day);
+        mapComponentContainer.appendChild(await mapComponent.render());
+        this.#container.appendChild(mapComponentContainer);
     }
 
     async #loadActivityList() {
@@ -104,7 +112,7 @@ export default class ItineraryPage extends BaseComponent {
     async #loadContent() {
         // this.#attachEventListeners();
         await this.#loadHeader();
-        await this.#loadMap();
+        await this.#loadMap(1);
         await this.#loadActivityList();
     }
 
