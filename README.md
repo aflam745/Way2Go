@@ -1,6 +1,4 @@
-# CS326Team36Project
-
-Group project for CS326
+# Way2Go
 
 ## Running the project
 
@@ -16,19 +14,19 @@ SESSION_SECRET=<GOOGLE SESSION SECRET HERE>
 On one terminal session:
 
 ```
-CS326Team36Project > ls
+Way2Go > ls
 README.md   back-end    front-end   team
-CS326Team36Project > cd back-end
-CS326Team36Project/back-end > npm run start
+Way2Go > cd back-end
+Way2Go/back-end > npm run start
 ```
 
 One the a separate terminal session:
 
 ```
-CS326Team36Project > ls
+Way2Go > ls
 README.md   back-end    front-end   team
-CS326Team36Project > cd front-end
-CS326Team36Project/front-end > npm run start
+Way2Go > cd front-end
+Way2Go/front-end > npm run start
 ```
 
 Open the browser at `http://localhost:3005`
@@ -41,4 +39,3 @@ Open the browser at `http://localhost:3005`
 - Andrew Flamia
 - Robert Winfield 
 - Emmanuel Kon
-- ~~Jeffrey Wang~~ (He did not commit a single line)
